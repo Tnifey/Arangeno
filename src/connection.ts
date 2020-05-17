@@ -1,4 +1,4 @@
-import { stringify as querystringify } from "querystring";
+// import { stringify as querystringify } from "querystring"; //! QueryString is built in
 import { ArangoError, HttpError } from "./error.ts";
 import {
   ArangojsResponse,
@@ -8,7 +8,7 @@ import {
 } from "./util/request.ts";
 import { sanitizeUrl } from "./util/sanitizeUrl.ts";
 import { Errback } from "./util/types.ts";
-import { LinkedList } from "x3-linkedlist";
+import { LinkedList } from "https://dev.jspm.io/x3-linkedlist";
 
 const MIME_JSON = /\/(json|javascript)(\W|$)/;
 const LEADER_ENDPOINT_HEADER = "x-arango-endpoint";
@@ -239,7 +239,7 @@ export class Connection {
     if (path) pathname += path;
     if (qs) {
       if (typeof qs === "string") search = `?${qs}`;
-      else search = `?${querystringify(clean(qs))}`;
+      else search = `?${new URLSearchParams(clean(qs))}`;
     }
     return search ? { pathname, search } : { pathname };
   }
