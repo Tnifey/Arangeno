@@ -1,12 +1,34 @@
 import { format as formatUrl, parse as parseUrl } from "url";
-import { joinPath } from "./joinPath.ts";
 import {
-  ArangojsError,
-  ArangojsResponse,
-  RequestOptions
-} from "./request.node.ts";
+  Agent as HttpAgent,
+  ClientRequest,
+  ClientRequestArgs,
+  IncomingMessage,
+  request as httpRequest,
+} from "https://deno.land/std/http/server.ts";
+
+import { joinPath } from "./joinPath.ts";
 import { Errback } from "./types.ts";
 import xhr from "./xhr.ts";
+
+export type ArangojsResponse = IncomingMessage & {
+  request: ClientRequest;
+  body?: any;
+  arangojsHostId?: number;
+};
+
+export type ArangojsError = Error & {
+  request: ClientRequest;
+};
+
+export interface RequestOptions {
+  method: string;
+  url: { pathname: string; search?: string };
+  headers: { [key: string]: string };
+  body: any;
+  expectBinary: boolean;
+  timeout?: number;
+}
 
 export const isBrowser = true;
 
