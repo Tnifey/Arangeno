@@ -1,14 +1,10 @@
-// import { stringify as querystringify } from "querystring"; //! QueryString is built in
 import { ArangoError, HttpError } from "./error.ts";
-import {
-  ArangojsResponse,
-  createRequest,
-  isBrowser,
-  RequestFunction
-} from "./util/request.ts";
+import { ArangojsResponse, createRequest, isBrowser } from "./util/request.ts";
 import { sanitizeUrl } from "./util/sanitizeUrl.ts";
 import { Errback } from "./util/types.ts";
-import { LinkedList } from "https://dev.jspm.io/x3-linkedlist";
+import X3LinkedList from "https://dev.jspm.io/x3-linkedlist";
+// @ts-ignore
+const { LinkedList } = X3LinkedList;
 
 const MIME_JSON = /\/(json|javascript)(\W|$)/;
 const LEADER_ENDPOINT_HEADER = "x-arango-endpoint";
@@ -105,7 +101,7 @@ export class Connection {
   private _maxRetries: number;
   private _maxTasks: number;
   private _queue = new LinkedList<Task>();
-  private _hosts: RequestFunction[] = [];
+  private _hosts: any[] = [];
   private _urls: string[] = [];
   private _activeHost: number;
   private _activeDirtyHost: number;
@@ -128,7 +124,7 @@ export class Connection {
           maxSockets: 3,
           keepAlive: true,
           keepAliveMsecs: 1000,
-          ...config.agentOptions
+          ...config.agentOptions,
         };
     this._maxTasks = this._agentOptions.maxSockets || 3;
     if (this._agentOptions.keepAlive) this._maxTasks *= 2;
@@ -205,10 +201,10 @@ export class Connection {
       } else {
         const response = res!;
         if (
-          response.statusCode === 503 &&
-          response.headers[LEADER_ENDPOINT_HEADER]
+          response.status === 503 &&
+          response.headers.has(LEADER_ENDPOINT_HEADER)
         ) {
-          const url = response.headers[LEADER_ENDPOINT_HEADER]!;
+          const url = response.headers.get(LEADER_ENDPOINT_HEADER)!;
           const [index] = this.addToHostList(url);
           task.host = index;
           if (this._activeHost === host) {
@@ -246,14 +242,14 @@ export class Connection {
 
   addToHostList(urls: string | string[]): number[] {
     const cleanUrls = (Array.isArray(urls) ? urls : [urls]).map(url =>
-      sanitizeUrl(url)
+      sanitizeUrl(url),
     );
     const newUrls = cleanUrls.filter(url => this._urls.indexOf(url) === -1);
     this._urls.push(...newUrls);
     this._hosts.push(
       ...newUrls.map((url: string) =>
-        createRequest(url, this._agentOptions, this._agent)
-      )
+        createRequest(url, this._agentOptions, this._agent),
+      ),
     );
     return cleanUrls.map(url => this._urls.indexOf(url));
   }
@@ -307,7 +303,7 @@ export class Connection {
       headers,
       ...urlInfo
     }: RequestOptions,
-    getter?: (res: ArangojsResponse) => T
+    getter?: ReqGetter<T>,
   ): Promise<T> {
     return new Promise((resolve, reject) => {
       let contentType = "text/plain";
@@ -325,7 +321,7 @@ export class Connection {
       const extraHeaders: { [key: string]: string } = {
         ...this._headers,
         "content-type": contentType,
-        "x-arango-version": String(this._arangoVersion)
+        "x-arango-version": String(this._arangoVersion),
       };
 
       if (this._transactionId) {
@@ -342,11 +338,11 @@ export class Connection {
           timeout,
           method,
           expectBinary,
-          body
+          body,
         },
         reject,
-        resolve: (res: ArangojsResponse) => {
-          const contentType = res.headers["content-type"];
+        resolve: async (res: ArangojsResponse) => {
+          const contentType = res.headers.get("content-type");
           let parsedBody: any = undefined;
           if (res.body.length && contentType && contentType.match(MIME_JSON)) {
             try {
@@ -363,10 +359,11 @@ export class Connection {
               }
             }
           } else if (res.body && !expectBinary) {
-            parsedBody = res.body.toString("utf-8");
+            parsedBody = await res.json();
           } else {
-            parsedBody = res.body;
+            parsedBody = await res.arrayBuffer();
           }
+
           if (
             parsedBody &&
             parsedBody.hasOwnProperty("error") &&
@@ -374,18 +371,23 @@ export class Connection {
             parsedBody.hasOwnProperty("errorMessage") &&
             parsedBody.hasOwnProperty("errorNum")
           ) {
+            // @ts-ignore
             res.body = parsedBody;
             reject(new ArangoError(res));
-          } else if (res.statusCode && res.statusCode >= 400) {
+          } else if (res.status && res.status >= 400) {
+            // @ts-ignore
             res.body = parsedBody;
             reject(new HttpError(res));
           } else {
+            // @ts-ignore
             if (!expectBinary) res.body = parsedBody;
             resolve(getter ? getter(res) : (res as any));
           }
-        }
+        },
       });
       this._runQueue();
     });
   }
 }
+
+type ReqGetter<T = any> = (res: ArangojsResponse) => T;

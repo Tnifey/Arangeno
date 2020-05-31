@@ -4,10 +4,10 @@ import { Graph } from "../graph";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
-  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
+  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400,
 );
 
-describe("Manipulating graph edges", function() {
+describe("Manipulating graph edges", function () {
   const dbName = `testdb_${Date.now()}`;
   const graphName = `testgraph_${Date.now()}`;
   let db: Database;
@@ -32,9 +32,9 @@ describe("Manipulating graph edges", function() {
         {
           collection: "knows",
           from: ["person"],
-          to: ["person"]
-        }
-      ]
+          to: ["person"],
+        },
+      ],
     });
   });
   afterEach(async () => {
@@ -48,16 +48,16 @@ describe("Manipulating graph edges", function() {
       expect(info.edgeDefinitions).to.be.instanceOf(Array);
       expect(info.edgeDefinitions.length).to.equal(1);
       expect(info.edgeDefinitions.map((e: any) => e.collection)).to.contain(
-        "knows"
+        "knows",
       );
       const edgeDefinition = info.edgeDefinitions.filter(
-        (e: any) => e.collection === "knows"
+        (e: any) => e.collection === "knows",
       );
       expect(
-        [].concat.apply([], edgeDefinition.map((e: any) => e.from))
+        [].concat.apply([], edgeDefinition.map((e: any) => e.from)),
       ).to.contain("person");
       expect(
-        [].concat.apply([], edgeDefinition.map((e: any) => e.to))
+        [].concat.apply([], edgeDefinition.map((e: any) => e.to)),
       ).to.contain("person");
     });
   });
@@ -90,23 +90,23 @@ describe("Manipulating graph edges", function() {
       const info = await graph.addEdgeDefinition({
         collection: "works_in",
         from: ["person"],
-        to: ["city"]
+        to: ["city"],
       });
       expect(info).to.have.property("name", graphName);
       expect(info).to.have.property("edgeDefinitions");
       expect(info.edgeDefinitions).to.be.instanceOf(Array);
       expect(info.edgeDefinitions.length).to.equal(2);
       expect(info.edgeDefinitions.map((e: any) => e.collection)).to.contain(
-        "works_in"
+        "works_in",
       );
       const edgeDefinition = info.edgeDefinitions.filter(
-        (e: any) => e.collection === "works_in"
+        (e: any) => e.collection === "works_in",
       );
       expect(
-        [].concat.apply([], edgeDefinition.map((e: any) => e.from))
+        [].concat.apply([], edgeDefinition.map((e: any) => e.from)),
       ).to.contain("person");
       expect(
-        [].concat.apply([], edgeDefinition.map((e: any) => e.to))
+        [].concat.apply([], edgeDefinition.map((e: any) => e.to)),
       ).to.contain("city");
     });
   });
@@ -115,23 +115,23 @@ describe("Manipulating graph edges", function() {
       const info = await graph.replaceEdgeDefinition("knows", {
         collection: "knows",
         from: ["person"],
-        to: ["city"]
+        to: ["city"],
       });
       expect(info).to.have.property("name", graphName);
       expect(info).to.have.property("edgeDefinitions");
       expect(info.edgeDefinitions).to.be.instanceOf(Array);
       expect(info.edgeDefinitions.length).to.equal(1);
       expect(info.edgeDefinitions.map((e: any) => e.collection)).to.contain(
-        "knows"
+        "knows",
       );
       const edgeDefinition = info.edgeDefinitions.filter(
-        (e: any) => e.collection === "knows"
+        (e: any) => e.collection === "knows",
       );
       expect(
-        [].concat.apply([], edgeDefinition.map((e: any) => e.from))
+        [].concat.apply([], edgeDefinition.map((e: any) => e.from)),
       ).to.contain("person");
       expect(
-        [].concat.apply([], edgeDefinition.map((e: any) => e.to))
+        [].concat.apply([], edgeDefinition.map((e: any) => e.to)),
       ).to.contain("city");
     });
   });
@@ -154,20 +154,20 @@ describe("Manipulating graph edges", function() {
           { _key: "Bob" },
           { _key: "Charlie" },
           { _key: "Dave" },
-          { _key: "Eve" }
+          { _key: "Eve" },
         ]),
         knows.import([
           { _from: "person/Alice", _to: "person/Bob" },
           { _from: "person/Bob", _to: "person/Charlie" },
           { _from: "person/Bob", _to: "person/Dave" },
           { _from: "person/Eve", _to: "person/Alice" },
-          { _from: "person/Eve", _to: "person/Bob" }
-        ])
+          { _from: "person/Eve", _to: "person/Bob" },
+        ]),
       ]);
     });
     it("executes traversal", async () => {
       const result = await graph.traversal("person/Alice", {
-        direction: "outbound"
+        direction: "outbound",
       });
       expect(result).to.have.property("visited");
       const visited = result.visited;

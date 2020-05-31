@@ -4,10 +4,10 @@ import { GraphEdgeCollection } from "../graph";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
-  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
+  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400,
 );
 
-describe("GraphEdgeCollection API", function() {
+describe("GraphEdgeCollection API", function () {
   const dbName = `testdb_${Date.now()}`;
   let db: Database;
   let collection: GraphEdgeCollection;
@@ -21,9 +21,9 @@ describe("GraphEdgeCollection API", function() {
         {
           collection: "knows",
           from: ["person"],
-          to: ["person"]
-        }
-      ]
+          to: ["person"],
+        },
+      ],
     });
     collection = graph.edgeCollection("knows");
     await graph
@@ -33,7 +33,7 @@ describe("GraphEdgeCollection API", function() {
         { _key: "Bob" },
         { _key: "Charlie" },
         { _key: "Dave" },
-        { _key: "Eve" }
+        { _key: "Eve" },
       ]);
   });
   after(async () => {
@@ -138,12 +138,12 @@ describe("GraphEdgeCollection API", function() {
         { _from: "person/Bob", _to: "person/Charlie" },
         { _from: "person/Bob", _to: "person/Dave" },
         { _from: "person/Eve", _to: "person/Alice" },
-        { _from: "person/Eve", _to: "person/Bob" }
+        { _from: "person/Eve", _to: "person/Bob" },
       ]);
     });
     it("executes traversal", async () => {
       const result = await collection.traversal("person/Alice", {
-        direction: "outbound"
+        direction: "outbound",
       });
       expect(result).to.have.property("visited");
       const visited = result.visited;
@@ -166,7 +166,7 @@ describe("GraphEdgeCollection API", function() {
       const doc = {
         potato: "tomato",
         _from: "person/Bob",
-        _to: "person/Alice"
+        _to: "person/Alice",
       };
       const meta = await collection.save(doc);
       delete meta.error;
@@ -174,7 +174,7 @@ describe("GraphEdgeCollection API", function() {
       await collection.replace(doc as any, {
         sup: "dawg",
         _from: "person/Bob",
-        _to: "person/Alice"
+        _to: "person/Alice",
       });
       const data = await collection.edge((doc as any)._key);
       expect(data).not.to.have.property("potato");
@@ -187,7 +187,7 @@ describe("GraphEdgeCollection API", function() {
         potato: "tomato",
         empty: false,
         _from: "person/Bob",
-        _to: "person/Alice"
+        _to: "person/Alice",
       };
       const meta = await collection.save(doc);
       delete meta.error;
@@ -203,7 +203,7 @@ describe("GraphEdgeCollection API", function() {
         potato: "tomato",
         empty: false,
         _from: "person/Bob",
-        _to: "person/Alice"
+        _to: "person/Alice",
       };
       const meta = await collection.save(doc);
       delete meta.error;
@@ -211,7 +211,7 @@ describe("GraphEdgeCollection API", function() {
       await collection.update(
         doc as any,
         { sup: "dawg", empty: null },
-        { keepNull: false }
+        { keepNull: false },
       );
       const data = await collection.edge((doc as any)._key);
       expect(data).to.have.property("potato", doc.potato);
@@ -225,7 +225,7 @@ describe("GraphEdgeCollection API", function() {
       await collection.save({
         _key: key,
         _from: "person/Bob",
-        _to: "person/Alice"
+        _to: "person/Alice",
       });
     });
     it("deletes the given edge", async () => {

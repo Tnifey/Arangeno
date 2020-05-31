@@ -4,12 +4,12 @@ import { DocumentCollection } from "../collection";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
-  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
+  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400,
 );
 const itPre34 = ARANGO_VERSION < 30400 ? it : it.skip;
 const it34 = ARANGO_VERSION >= 30400 ? it : it.skip;
 
-describe("Managing indexes", function() {
+describe("Managing indexes", function () {
   let db: Database;
   let collection: DocumentCollection;
   const dbName = `testdb_${Date.now()}`;
@@ -33,7 +33,7 @@ describe("Managing indexes", function() {
     it("should create a index of given type", async () => {
       const info = await collection.createIndex({
         type: "hash",
-        fields: ["value0"]
+        fields: ["value0"],
       });
       expect(info).to.have.property("id");
       expect(info).to.have.property("type", "hash");

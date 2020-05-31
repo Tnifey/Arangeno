@@ -19,7 +19,7 @@ export class Route {
     else if (path.charAt(0) !== "/") path = `/${path}`;
     return new Route(this._connection, this._path + path, {
       ...this._headers,
-      ...headers
+      ...headers,
     });
   }
 
@@ -75,7 +75,7 @@ export class Route {
   delete(
     path?: string,
     qs?: Object,
-    headers?: Object
+    headers?: Object,
   ): Promise<ArangojsResponse>;
   delete(...args: any[]): Promise<ArangojsResponse> {
     return this._request1("DELETE", ...args);
@@ -112,7 +112,7 @@ export class Route {
     path?: string,
     body?: any,
     qs?: Object,
-    headers?: Object
+    headers?: Object,
   ): Promise<ArangojsResponse>;
   patch(...args: any[]): Promise<ArangojsResponse> {
     return this._request2("PATCH", ...args);
@@ -129,7 +129,7 @@ export class Route {
     path?: string,
     body?: any,
     qs?: Object,
-    headers?: Object
+    headers?: Object,
   ): Promise<ArangojsResponse>;
   post(...args: any[]): Promise<ArangojsResponse> {
     return this._request2("POST", ...args);
@@ -146,7 +146,7 @@ export class Route {
     path?: string,
     body?: any,
     qs?: Object,
-    headers?: Object
+    headers?: Object,
   ): Promise<ArangojsResponse>;
   put(...args: any[]): Promise<ArangojsResponse> {
     return this._request2("PUT", ...args);

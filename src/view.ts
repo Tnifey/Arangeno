@@ -2,7 +2,7 @@ import { Connection } from "./connection.ts";
 import { isArangoError } from "./error.ts";
 
 export enum ViewType {
-  ARANGOSEARCH_VIEW = "arangosearch"
+  ARANGOSEARCH_VIEW = "arangosearch",
 }
 
 export interface ArangoView {
@@ -78,7 +78,8 @@ export interface ArangoSearchViewPropertiesOptions {
     | {
         field: string;
         asc: boolean;
-      })[];
+      }
+  )[];
   links?: {
     [key: string]: ArangoSearchViewCollectionLink | undefined;
   };
@@ -99,7 +100,7 @@ export abstract class BaseView implements ArangoView {
   get(): Promise<ArangoViewResponse> {
     return this._connection.request(
       { path: `/_api/view/${this.name}` },
-      res => res.body
+      res => res.body,
     );
   }
 
@@ -111,7 +112,7 @@ export abstract class BaseView implements ArangoView {
           return false;
         }
         throw err;
-      }
+      },
     );
   }
 
@@ -120,9 +121,9 @@ export abstract class BaseView implements ArangoView {
       {
         method: "PUT",
         path: `/_api/view/${this.name}/rename`,
-        body: { name }
+        body: { name },
       },
-      res => res.body
+      res => res.body,
     );
     this.name = name;
     return result;
@@ -132,9 +133,9 @@ export abstract class BaseView implements ArangoView {
     return this._connection.request(
       {
         method: "DELETE",
-        path: `/_api/view/${this.name}`
+        path: `/_api/view/${this.name}`,
       },
-      res => res.body
+      res => res.body,
     );
   }
 }
@@ -143,7 +144,7 @@ export class ArangoSearchView extends BaseView {
   type = ViewType.ARANGOSEARCH_VIEW;
 
   create(
-    properties: ArangoSearchViewPropertiesOptions = {}
+    properties: ArangoSearchViewPropertiesOptions = {},
   ): Promise<ArangoSearchViewPropertiesResponse> {
     return this._connection.request(
       {
@@ -152,43 +153,43 @@ export class ArangoSearchView extends BaseView {
         body: {
           ...properties,
           name: this.name,
-          type: this.type
-        }
+          type: this.type,
+        },
       },
-      res => res.body
+      res => res.body,
     );
   }
 
   properties(): Promise<ArangoSearchViewPropertiesResponse> {
     return this._connection.request(
       { path: `/_api/view/${this.name}/properties` },
-      res => res.body
+      res => res.body,
     );
   }
 
   setProperties(
-    properties: ArangoSearchViewPropertiesOptions = {}
+    properties: ArangoSearchViewPropertiesOptions = {},
   ): Promise<ArangoSearchViewPropertiesResponse> {
     return this._connection.request(
       {
         method: "PATCH",
         path: `/_api/view/${this.name}/properties`,
-        body: properties
+        body: properties,
       },
-      res => res.body
+      res => res.body,
     );
   }
 
   replaceProperties(
-    properties: ArangoSearchViewPropertiesOptions = {}
+    properties: ArangoSearchViewPropertiesOptions = {},
   ): Promise<ArangoSearchViewPropertiesResponse> {
     return this._connection.request(
       {
         method: "PUT",
         path: `/_api/view/${this.name}/properties`,
-        body: properties
+        body: properties,
       },
-      res => res.body
+      res => res.body,
     );
   }
 }

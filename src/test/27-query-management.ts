@@ -5,10 +5,10 @@ import { ArangoError } from "../error";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
-  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
+  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400,
 );
 
-describe("Query Management API", function() {
+describe("Query Management API", function () {
   const dbName = `testdb_${Date.now()}`;
   let db: Database;
   before(async () => {
@@ -26,9 +26,9 @@ describe("Query Management API", function() {
   });
 
   describe("database.query", () => {
-    it("returns a cursor for the query result", done => {
+    it("returns a cursor for the query result", (done) => {
       db.query("RETURN 23")
-        .then(cursor => {
+        .then((cursor) => {
           expect(cursor).to.be.an.instanceof(ArrayCursor);
           done();
         })
@@ -71,7 +71,7 @@ describe("Query Management API", function() {
     it("supports options", async () => {
       const cursor = await db.query("FOR x IN 1..10 RETURN x", undefined, {
         batchSize: 2,
-        count: true
+        count: true,
       });
       expect(cursor.count).to.equal(10);
       expect((cursor as any)._hasMore).to.equal(true);
@@ -89,7 +89,7 @@ describe("Query Management API", function() {
     it("supports compact queries", async () => {
       const cursor = await db.query({
         query: "RETURN @potato",
-        bindVars: { potato: "tomato" }
+        bindVars: { potato: "tomato" },
       });
       const value = await cursor.next();
       expect(value).to.equal("tomato");
@@ -97,7 +97,7 @@ describe("Query Management API", function() {
     it("supports compact queries with options", async () => {
       const query: any = {
         query: "FOR x IN RANGE(1, @max) RETURN x",
-        bindVars: { max: 10 }
+        bindVars: { max: 10 },
       };
       const cursor = await db.query(query, { batchSize: 2, count: true });
       expect(cursor.count).to.equal(10);
@@ -138,7 +138,7 @@ describe("Query Management API", function() {
     afterEach(async () => {
       await db.setQueryTracking({
         enabled: true,
-        slowQueryThreshold: 5
+        slowQueryThreshold: 5,
       });
       await db.clearSlowQueries();
     });
@@ -149,7 +149,7 @@ describe("Query Management API", function() {
         maxSlowQueries: 2,
         slowQueryThreshold: 5,
         trackBindVars: true,
-        trackSlowQueries: true
+        trackSlowQueries: true,
       });
       expect(result).to.have.property("enabled", true);
       expect(result).to.have.property("maxQueryStringLength", 64);
@@ -177,14 +177,14 @@ describe("Query Management API", function() {
       await db.setQueryTracking({
         enabled: true,
         slowQueryThreshold: 0.1,
-        trackSlowQueries: true
+        trackSlowQueries: true,
       });
       await db.clearSlowQueries();
     });
     afterEach(async () => {
       await db.setQueryTracking({
         enabled: true,
-        slowQueryThreshold: 5
+        slowQueryThreshold: 5,
       });
       await db.clearSlowQueries();
     });
@@ -202,14 +202,14 @@ describe("Query Management API", function() {
       await db.setQueryTracking({
         enabled: true,
         slowQueryThreshold: 0.1,
-        trackSlowQueries: true
+        trackSlowQueries: true,
       });
       await db.clearSlowQueries();
     });
     afterEach(async () => {
       await db.setQueryTracking({
         enabled: true,
-        slowQueryThreshold: 5
+        slowQueryThreshold: 5,
       });
       await db.clearSlowQueries();
     });

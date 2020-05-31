@@ -6,7 +6,7 @@ import {
   DocumentReadOptions,
   DOCUMENT_NOT_FOUND,
   EdgeCollection,
-  isArangoCollection
+  isArangoCollection,
 } from "./collection.ts";
 import { Connection } from "./connection.ts";
 import { isArangoError } from "./error.ts";
@@ -45,11 +45,11 @@ export class GraphVertexCollection extends BaseCollection {
   document(documentHandle: DocumentHandle, graceful: boolean): Promise<any>;
   document(
     documentHandle: DocumentHandle,
-    opts?: DocumentReadOptions
+    opts?: DocumentReadOptions,
   ): Promise<any>;
   document(
     documentHandle: DocumentHandle,
-    opts: boolean | DocumentReadOptions = {}
+    opts: boolean | DocumentReadOptions = {},
   ): Promise<any> {
     if (typeof opts === "boolean") {
       opts = { graceful: opts };
@@ -57,15 +57,17 @@ export class GraphVertexCollection extends BaseCollection {
     const { allowDirtyRead = undefined, graceful = false } = opts;
     const result = this._connection.request(
       {
-        path: `/_api/gharial/${this.graph.name}/vertex/${this._documentHandle(
-          documentHandle
-        )}`,
-        allowDirtyRead
+        path: `/_api/gharial/${this.graph.name}/vertex/${
+          this._documentHandle(
+            documentHandle,
+          )
+        }`,
+        allowDirtyRead,
       },
-      res => res.body.vertex
+      (res) => res.body.vertex,
     );
     if (!graceful) return result;
-    return result.catch(err => {
+    return result.catch((err) => {
       if (isArangoError(err) && err.errorNum === DOCUMENT_NOT_FOUND) {
         return null;
       }
@@ -76,11 +78,11 @@ export class GraphVertexCollection extends BaseCollection {
   vertex(documentHandle: DocumentHandle, graceful: boolean): Promise<any>;
   vertex(
     documentHandle: DocumentHandle,
-    opts?: DocumentReadOptions
+    opts?: DocumentReadOptions,
   ): Promise<any>;
   vertex(
     documentHandle: DocumentHandle,
-    opts: boolean | DocumentReadOptions = {}
+    opts: boolean | DocumentReadOptions = {},
   ): Promise<any> {
     if (typeof opts === "boolean") {
       opts = { graceful: opts };
@@ -94,16 +96,16 @@ export class GraphVertexCollection extends BaseCollection {
         method: "POST",
         path: `/_api/gharial/${this.graph.name}/vertex/${this.name}`,
         body: data,
-        qs: opts
+        qs: opts,
       },
-      res => res.body.vertex
+      (res) => res.body.vertex,
     );
   }
 
   replace(
     documentHandle: DocumentHandle,
     newValue: Object | Array<Object>,
-    opts: ReplaceOptions | string = {}
+    opts: ReplaceOptions | string = {},
   ) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
@@ -117,21 +119,23 @@ export class GraphVertexCollection extends BaseCollection {
     return this._connection.request(
       {
         method: "PUT",
-        path: `/_api/gharial/${this.graph.name}/vertex/${this._documentHandle(
-          documentHandle
-        )}`,
+        path: `/_api/gharial/${this.graph.name}/vertex/${
+          this._documentHandle(
+            documentHandle,
+          )
+        }`,
         body: newValue,
         qs: opts,
-        headers
+        headers,
       },
-      res => res.body.vertex
+      (res) => res.body.vertex,
     );
   }
 
   update(
     documentHandle: DocumentHandle,
     newValue: Object | Array<Object>,
-    opts: UpdateOptions | string = {}
+    opts: UpdateOptions | string = {},
   ) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
@@ -145,14 +149,16 @@ export class GraphVertexCollection extends BaseCollection {
     return this._connection.request(
       {
         method: "PATCH",
-        path: `/_api/gharial/${this.graph.name}/vertex/${this._documentHandle(
-          documentHandle
-        )}`,
+        path: `/_api/gharial/${this.graph.name}/vertex/${
+          this._documentHandle(
+            documentHandle,
+          )
+        }`,
         body: newValue,
         qs: opts,
-        headers
+        headers,
       },
-      res => res.body.vertex
+      (res) => res.body.vertex,
     );
   }
 
@@ -169,13 +175,15 @@ export class GraphVertexCollection extends BaseCollection {
     return this._connection.request(
       {
         method: "DELETE",
-        path: `/_api/gharial/${this.graph.name}/vertex/${this._documentHandle(
-          documentHandle
-        )}`,
+        path: `/_api/gharial/${this.graph.name}/vertex/${
+          this._documentHandle(
+            documentHandle,
+          )
+        }`,
         qs: opts,
-        headers
+        headers,
       },
-      res => res.body.removed
+      (res) => res.body.removed,
     );
   }
 }
@@ -194,11 +202,11 @@ export class GraphEdgeCollection extends EdgeCollection {
   document(documentHandle: DocumentHandle, graceful: boolean): Promise<any>;
   document(
     documentHandle: DocumentHandle,
-    opts?: DocumentReadOptions
+    opts?: DocumentReadOptions,
   ): Promise<any>;
   document(
     documentHandle: DocumentHandle,
-    opts: boolean | DocumentReadOptions = {}
+    opts: boolean | DocumentReadOptions = {},
   ): Promise<any> {
     if (typeof opts === "boolean") {
       opts = { graceful: opts };
@@ -206,15 +214,17 @@ export class GraphEdgeCollection extends EdgeCollection {
     const { allowDirtyRead = undefined, graceful = false } = opts;
     const result = this._connection.request(
       {
-        path: `/_api/gharial/${this.graph.name}/edge/${this._documentHandle(
-          documentHandle
-        )}`,
-        allowDirtyRead
+        path: `/_api/gharial/${this.graph.name}/edge/${
+          this._documentHandle(
+            documentHandle,
+          )
+        }`,
+        allowDirtyRead,
       },
-      res => res.body.edge
+      (res) => res.body.edge,
     );
     if (!graceful) return result;
-    return result.catch(err => {
+    return result.catch((err) => {
       if (isArangoError(err) && err.errorNum === DOCUMENT_NOT_FOUND) {
         return null;
       }
@@ -224,25 +234,25 @@ export class GraphEdgeCollection extends EdgeCollection {
 
   save(
     data: Object | Array<Object>,
-    opts?: InsertOptions
+    opts?: InsertOptions,
   ): Promise<any>;
   save(
     data: Object | Array<Object>,
     fromId: DocumentHandle,
     toId: DocumentHandle,
-    opts?: InsertOptions
+    opts?: InsertOptions,
   ): Promise<any>;
   save(
     data: Object | Array<Object>,
     fromIdOrOpts?: DocumentHandle | InsertOptions,
     toId?: DocumentHandle,
-    opts?: InsertOptions
+    opts?: InsertOptions,
   ) {
     if (toId !== undefined) {
       const fromId = this._documentHandle(fromIdOrOpts as DocumentHandle);
       toId = this._documentHandle(toId);
       if (Array.isArray(data)) {
-        data = data.map(data => ({ ...data, _from: fromId, _to: toId }));
+        data = data.map((data) => ({ ...data, _from: fromId, _to: toId }));
       } else {
         data = { ...data, _from: fromId, _to: toId };
       }
@@ -256,16 +266,16 @@ export class GraphEdgeCollection extends EdgeCollection {
         method: "POST",
         path: `/_api/gharial/${this.graph.name}/edge/${this.name}`,
         body: data,
-        qs: opts
+        qs: opts,
       },
-      res => res.body.edge
+      (res) => res.body.edge,
     );
   }
 
   replace(
     documentHandle: DocumentHandle,
     newValue: Object | Array<Object>,
-    opts: ReplaceOptions | string = {}
+    opts: ReplaceOptions | string = {},
   ) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
@@ -279,21 +289,23 @@ export class GraphEdgeCollection extends EdgeCollection {
     return this._connection.request(
       {
         method: "PUT",
-        path: `/_api/gharial/${this.graph.name}/edge/${this._documentHandle(
-          documentHandle
-        )}`,
+        path: `/_api/gharial/${this.graph.name}/edge/${
+          this._documentHandle(
+            documentHandle,
+          )
+        }`,
         body: newValue,
         qs: opts,
-        headers
+        headers,
       },
-      res => res.body.edge
+      (res) => res.body.edge,
     );
   }
 
   update(
     documentHandle: DocumentHandle,
     newValue: Object | Array<Object>,
-    opts: UpdateOptions | string = {}
+    opts: UpdateOptions | string = {},
   ) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
@@ -307,14 +319,16 @@ export class GraphEdgeCollection extends EdgeCollection {
     return this._connection.request(
       {
         method: "PATCH",
-        path: `/_api/gharial/${this.graph.name}/edge/${this._documentHandle(
-          documentHandle
-        )}`,
+        path: `/_api/gharial/${this.graph.name}/edge/${
+          this._documentHandle(
+            documentHandle,
+          )
+        }`,
         body: newValue,
         qs: opts,
-        headers
+        headers,
       },
-      res => res.body.edge
+      (res) => res.body.edge,
     );
   }
 
@@ -331,13 +345,15 @@ export class GraphEdgeCollection extends EdgeCollection {
     return this._connection.request(
       {
         method: "DELETE",
-        path: `/_api/gharial/${this.graph.name}/edge/${this._documentHandle(
-          documentHandle
-        )}`,
+        path: `/_api/gharial/${this.graph.name}/edge/${
+          this._documentHandle(
+            documentHandle,
+          )
+        }`,
         qs: opts,
-        headers
+        headers,
       },
-      res => res.body.removed
+      (res) => res.body.removed,
     );
   }
 }
@@ -356,19 +372,19 @@ export class Graph {
   get() {
     return this._connection.request(
       { path: `/_api/gharial/${this.name}` },
-      res => res.body.graph
+      (res) => res.body.graph,
     );
   }
 
   exists(): Promise<boolean> {
     return this.get().then(
       () => true,
-      err => {
+      (err) => {
         if (isArangoError(err) && err.errorNum === GRAPH_NOT_FOUND) {
           return false;
         }
         throw err;
-      }
+      },
     );
   }
 
@@ -379,11 +395,11 @@ export class Graph {
         path: "/_api/gharial",
         body: {
           ...properties,
-          name: this.name
+          name: this.name,
         },
-        qs: opts
+        qs: opts,
       },
-      res => res.body.graph
+      (res) => res.body.graph,
     );
   }
 
@@ -392,9 +408,9 @@ export class Graph {
       {
         method: "DELETE",
         path: `/_api/gharial/${this.name}`,
-        qs: { dropCollections }
+        qs: { dropCollections },
       },
-      res => res.body.removed
+      (res) => res.body.removed,
     );
   }
 
@@ -405,14 +421,14 @@ export class Graph {
   listVertexCollections(opts?: { excludeOrphans?: boolean }) {
     return this._connection.request(
       { path: `/_api/gharial/${this.name}/vertex`, qs: opts },
-      res => res.body.collections
+      (res) => res.body.collections,
     );
   }
 
   async vertexCollections(opts?: { excludeOrphans?: boolean }) {
     const names = await this.listVertexCollections(opts);
     return names.map(
-      (name: any) => new GraphVertexCollection(this._connection, name, this)
+      (name: any) => new GraphVertexCollection(this._connection, name, this),
     );
   }
 
@@ -424,15 +440,15 @@ export class Graph {
       {
         method: "POST",
         path: `/_api/gharial/${this.name}/vertex`,
-        body: { collection }
+        body: { collection },
       },
-      res => res.body.graph
+      (res) => res.body.graph,
     );
   }
 
   removeVertexCollection(
     collection: string | ArangoCollection,
-    dropCollection: boolean = false
+    dropCollection: boolean = false,
   ) {
     if (isArangoCollection(collection)) {
       collection = collection.name;
@@ -442,10 +458,10 @@ export class Graph {
         method: "DELETE",
         path: `/_api/gharial/${this.name}/vertex/${collection}`,
         qs: {
-          dropCollection
-        }
+          dropCollection,
+        },
       },
-      res => res.body.graph
+      (res) => res.body.graph,
     );
   }
 
@@ -456,14 +472,14 @@ export class Graph {
   listEdgeCollections() {
     return this._connection.request(
       { path: `/_api/gharial/${this.name}/edge` },
-      res => res.body.collections
+      (res) => res.body.collections,
     );
   }
 
   async edgeCollections() {
     const names = await this.listEdgeCollections();
     return names.map(
-      (name: any) => new GraphEdgeCollection(this._connection, name, this)
+      (name: any) => new GraphEdgeCollection(this._connection, name, this),
     );
   }
 
@@ -472,9 +488,9 @@ export class Graph {
       {
         method: "POST",
         path: `/_api/gharial/${this.name}/edge`,
-        body: definition
+        body: definition,
       },
-      res => res.body.graph
+      (res) => res.body.graph,
     );
   }
 
@@ -483,25 +499,25 @@ export class Graph {
       {
         method: "PUT",
         path: `/_api/gharial/${this.name}/edge/${definitionName}`,
-        body: definition
+        body: definition,
       },
-      res => res.body.graph
+      (res) => res.body.graph,
     );
   }
 
   removeEdgeDefinition(
     definitionName: string,
-    dropCollection: boolean = false
+    dropCollection: boolean = false,
   ) {
     return this._connection.request(
       {
         method: "DELETE",
         path: `/_api/gharial/${this.name}/edge/${definitionName}`,
         qs: {
-          dropCollection
-        }
+          dropCollection,
+        },
       },
-      res => res.body.graph
+      (res) => res.body.graph,
     );
   }
 
@@ -513,10 +529,10 @@ export class Graph {
         body: {
           ...opts,
           startVertex,
-          graphName: this.name
-        }
+          graphName: this.name,
+        },
       },
-      res => res.body.result
+      (res) => res.body.result,
     );
   }
 }

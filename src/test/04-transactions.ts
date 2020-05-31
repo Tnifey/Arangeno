@@ -4,7 +4,7 @@ import { DocumentCollection } from "../collection";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
-  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
+  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400,
 );
 const describe35 = ARANGO_VERSION >= 30500 ? describe : describe.skip;
 const itRdb = process.env.ARANGO_STORAGE_ENGINE !== "mmfiles" ? it : it.skip;
@@ -22,7 +22,7 @@ describe("Transactions", () => {
       const result = await db.executeTransaction(
         [],
         "function (params) {return params;}",
-        { params: "test" }
+        { params: "test" },
       );
       expect(result).to.equal("test");
     });
@@ -92,7 +92,7 @@ describe("Transactions", () => {
       const [meta1, meta2] = await trx.run(() =>
         Promise.all([
           collection.save({ _key: "test1" }),
-          collection.save({ _key: "test2" })
+          collection.save({ _key: "test2" }),
         ])
       );
       expect(meta1).to.have.property("_key", "test1");
@@ -124,7 +124,7 @@ describe("Transactions", () => {
       await trx.run(() =>
         Promise.all([
           collection.save({ _key: "test1" }),
-          collection.save({ _key: "test2" })
+          collection.save({ _key: "test2" }),
         ])
       );
       let doc: any;

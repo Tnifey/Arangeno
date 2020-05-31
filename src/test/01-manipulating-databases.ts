@@ -6,11 +6,11 @@ const range = (n: number): number[] => Array.from(Array(n).keys());
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
-  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
+  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400,
 );
 const it2x = ARANGO_VERSION < 30000 ? it : it.skip;
 
-describe("Manipulating databases", function() {
+describe("Manipulating databases", function () {
   let db: Database;
   beforeEach(() => {
     db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });
@@ -92,22 +92,22 @@ describe("Manipulating databases", function() {
   });
   describe("database.truncate", () => {
     let name = `testdb_${Date.now()}`;
-    let nonSystemCollections = range(4).map(i => `c_${Date.now()}_${i}`);
-    let systemCollections = range(4).map(i => `_c_${Date.now()}_${i}`);
+    let nonSystemCollections = range(4).map((i) => `c_${Date.now()}_${i}`);
+    let systemCollections = range(4).map((i) => `_c_${Date.now()}_${i}`);
     beforeEach(async () => {
       await db.createDatabase(name);
       db.useDatabase(name);
       await Promise.all([
-        ...nonSystemCollections.map(async name => {
+        ...nonSystemCollections.map(async (name) => {
           let collection = db.collection(name);
           await collection.create();
           return await collection.save({ _key: "example" });
         }),
-        ...systemCollections.map(async name => {
+        ...systemCollections.map(async (name) => {
           let collection = db.collection(name);
           await collection.create({ isSystem: true });
           return await collection.save({ _key: "example" });
-        })
+        }),
       ]);
     });
     afterEach(async () => {
@@ -117,7 +117,7 @@ describe("Manipulating databases", function() {
     it("removes all documents from all non-system collections in the database", async () => {
       await db.truncate();
       await Promise.all([
-        ...nonSystemCollections.map(async name => {
+        ...nonSystemCollections.map(async (name) => {
           let doc;
           try {
             doc = await db.collection(name).document("example");
@@ -127,9 +127,9 @@ describe("Manipulating databases", function() {
           }
           expect.fail(`Expected document to be destroyed: ${doc._id}`);
         }),
-        ...systemCollections.map(name => {
+        ...systemCollections.map((name) => {
           db.collection(name).document("example");
-        })
+        }),
       ]);
     });
     it2x(
@@ -137,7 +137,7 @@ describe("Manipulating databases", function() {
       async () => {
         await db.truncate(false);
         await Promise.all(
-          nonSystemCollections.map(async name => {
+          nonSystemCollections.map(async (name) => {
             let doc;
             try {
               doc = await db.collection(name).document("example");
@@ -146,9 +146,9 @@ describe("Manipulating databases", function() {
               return;
             }
             expect.fail(`Expected document to be destroyed: ${doc._id}`);
-          })
+          }),
         );
-      }
+      },
     );
   });
 });

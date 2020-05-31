@@ -43,7 +43,7 @@ const messages: { [key: string]: string } = {
   508: "Loop Detected",
   510: "Not Extended",
   511: "Network Authentication Required",
-  599: "Network Connect Timeout Error"
+  599: "Network Connect Timeout Error",
 };
 
 const nativeErrorKeys = [
@@ -52,7 +52,7 @@ const nativeErrorKeys = [
   "columnNumber",
   "stack",
   "description",
-  "number"
+  "number",
 ] as (keyof Error)[];
 
 export function isArangoError(err: any): err is ArangoError {

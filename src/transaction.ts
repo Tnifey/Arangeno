@@ -25,16 +25,16 @@ export class ArangoTransaction {
           return false;
         }
         throw err;
-      }
+      },
     );
   }
 
   get(): Promise<TransactionStatus> {
     return this._connection.request(
       {
-        path: `/_api/transaction/${this.id}`
+        path: `/_api/transaction/${this.id}`,
       },
-      res => res.body.result
+      res => res.body.result,
     );
   }
 
@@ -42,9 +42,9 @@ export class ArangoTransaction {
     return this._connection.request(
       {
         method: "PUT",
-        path: `/_api/transaction/${this.id}`
+        path: `/_api/transaction/${this.id}`,
       },
-      res => res.body.result
+      res => res.body.result,
     );
   }
 
@@ -52,9 +52,9 @@ export class ArangoTransaction {
     return this._connection.request(
       {
         method: "DELETE",
-        path: `/_api/transaction/${this.id}`
+        path: `/_api/transaction/${this.id}`,
       },
-      res => res.body.result
+      res => res.body.result,
     );
   }
 
