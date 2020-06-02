@@ -1,3 +1,3 @@
-import ExtendableError from "https://dev.jspm.io/npm:es6-error";
-
+let ExtendableError = require("es6-error");
+ExtendableError = ExtendableError.default || ExtendableError;
 export default ExtendableError as typeof Error;

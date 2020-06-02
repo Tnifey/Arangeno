@@ -58,7 +58,7 @@ export function aql(
           2,
           strings[i] + src.strings[0],
           ...src.strings.slice(1, src.args.length),
-          src.strings[src.args.length] + strings[i + 1],
+          src.strings[src.args.length] + strings[i + 1]
         );
       } else {
         query += rawValue.query + strings[i + 1];
@@ -92,13 +92,13 @@ export function aql(
   return {
     query,
     bindVars,
-    _source: () => ({ strings, args }),
+    _source: () => ({ strings, args })
   };
 }
 
 export namespace aql {
   export const literal = (
-    value: string | number | boolean | AqlLiteral | null | undefined,
+    value: string | number | boolean | AqlLiteral | null | undefined
   ): AqlLiteral => {
     if (isAqlLiteral(value)) {
       return value;
@@ -109,12 +109,12 @@ export namespace aql {
           return "";
         }
         return String(value);
-      },
+      }
     };
   };
   export const join = (
     values: AqlValue[],
-    sep: string = " ",
+    sep: string = " "
   ): GeneratedAqlQuery => {
     if (!values.length) {
       return aql``;
@@ -124,7 +124,7 @@ export namespace aql {
     }
     return aql(
       ["", ...Array(values.length - 1).fill(sep), ""] as any,
-      ...values,
+      ...values
     );
   };
 }

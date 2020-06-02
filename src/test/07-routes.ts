@@ -5,13 +5,13 @@ import { Route } from "../route";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
-  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400,
+  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
 );
 
 describe("Arbitrary HTTP routes", () => {
   const db = new Database({
     url: ARANGO_URL,
-    arangoVersion: ARANGO_VERSION,
+    arangoVersion: ARANGO_VERSION
   });
   describe("database.route", () => {
     it("returns a Route instance", () => {
@@ -30,7 +30,7 @@ describe("Arbitrary HTTP routes", () => {
   });
 });
 
-describe("Route API", function () {
+describe("Route API", function() {
   const name = `testdb_${Date.now()}`;
   let db: Database;
   let collection: DocumentCollection;

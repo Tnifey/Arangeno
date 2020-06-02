@@ -2,11 +2,7 @@ export type Errback<T> = (err: Error | null, result?: T) => void;
 
 // The following types are based on the official @arangodb types
 
-export type KeyGeneratorType =
-  | "traditional"
-  | "autoincrement"
-  | "uuid"
-  | "padded";
+export type KeyGeneratorType = "traditional" | "autoincrement" | "uuid" | "padded";
 
 export interface CollectionChecksum {
   checksum: string;
@@ -133,16 +129,12 @@ export interface UpdateMetadata extends DocumentMetadata {
   _oldRev: string;
 }
 
-export type Document<T extends object = any> =
-  & { [K in keyof T]: T[K] }
-  & DocumentMetadata
-  & { _from?: string; _to?: string }
-  & {
+export type Document<T extends object = any> = { [K in keyof T]: T[K] } &
+  DocumentMetadata & { _from?: string; _to?: string } & {
     [key: string]: any;
   };
-export type DocumentData<T extends object = any> =
-  & { [K in keyof T]: T[K] }
-  & Partial<DocumentMetadata>;
+export type DocumentData<T extends object = any> = { [K in keyof T]: T[K] } &
+  Partial<DocumentMetadata>;
 export type Edge<T extends object = any> = Document<T> & {
   _from: string;
   _to: string;

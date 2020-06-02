@@ -34,31 +34,31 @@ describe("Configuring the driver", () => {
     });
   });
   describe("with headers", () => {
-    it("applies the headers", (done) => {
+    it("applies the headers", done => {
       const conn = new Connection({
         headers: {
           "x-one": "1",
-          "x-two": "2",
-        },
+          "x-two": "2"
+        }
       });
       (conn as any)._hosts = [
         ({ headers }: any) => {
           expect(headers).to.have.property("x-one", "1");
           expect(headers).to.have.property("x-two", "2");
           done();
-        },
+        }
       ];
       conn.request({ headers: {} }, () => {});
     });
   });
   describe("with an arangoVersion", () => {
-    it("sets the x-arango-version header", (done) => {
+    it("sets the x-arango-version header", done => {
       const conn = new Connection({ arangoVersion: 99999 });
       (conn as any)._hosts = [
         ({ headers }: any) => {
           expect(headers).to.have.property("x-arango-version", "99999");
           done();
-        },
+        }
       ];
       conn.request({ headers: {} }, () => {});
     });
@@ -74,7 +74,7 @@ describe("Configuring the driver", () => {
     });
     before(() => {
       let Agent = (ptcl: any) =>
-        function (opts: any) {
+        function(opts: any) {
           protocol = ptcl;
           options = opts;
           return () => null;
@@ -110,19 +110,18 @@ describe("Configuring the driver", () => {
       options = undefined;
     });
     before(() => {
-      let Request = (ptcl: any) =>
-        (opts: any) => {
-          protocol = ptcl;
-          options = opts;
-          return {
-            on() {
-              return this;
-            },
-            end() {
-              return this;
-            },
-          };
+      let Request = (ptcl: any) => (opts: any) => {
+        protocol = ptcl;
+        options = opts;
+        return {
+          on() {
+            return this;
+          },
+          end() {
+            return this;
+          }
         };
+      };
       (http as any).request = Request("http");
       (https as any).request = Request("https");
     });
@@ -163,7 +162,7 @@ describe("Configuring the driver", () => {
         _destroyed: false,
         destroy() {
           this._destroyed = true;
-        },
+        }
       };
       const conn = new Connection({ agent });
       expect(agent._destroyed).to.equal(false);

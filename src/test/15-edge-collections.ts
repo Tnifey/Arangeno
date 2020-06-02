@@ -4,10 +4,10 @@ import { EdgeCollection } from "../collection";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
-  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400,
+  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
 );
 
-describe("EdgeCollection API", function () {
+describe("EdgeCollection API", function() {
   const name = `testdb_${Date.now()}`;
   let db: Database;
   let collection: EdgeCollection;
@@ -108,7 +108,7 @@ describe("EdgeCollection API", function () {
         "_id",
         "_rev",
         "_from",
-        "_to",
+        "_to"
       );
       expect(doc._id).to.equal(meta._id);
       expect(doc._key).to.equal(meta._key);
@@ -122,7 +122,7 @@ describe("EdgeCollection API", function () {
         chicken: "chicken",
         _key: "banana",
         _from: "d/1",
-        _to: "d/2",
+        _to: "d/2"
       };
       const meta = await collection.save(data);
       expect(meta).to.be.an("object");
@@ -142,7 +142,7 @@ describe("EdgeCollection API", function () {
         "_id",
         "_rev",
         "_from",
-        "_to",
+        "_to"
       );
       expect(doc._id).to.equal(meta._id);
       expect(doc._rev).to.equal(meta._rev);
@@ -173,7 +173,7 @@ describe("EdgeCollection API", function () {
         "_id",
         "_rev",
         "_from",
-        "_to",
+        "_to"
       );
       expect(doc.chicken).to.equal(data.chicken);
       expect(doc._id).to.equal(meta._id);
@@ -206,7 +206,7 @@ describe("EdgeCollection API", function () {
         "_id",
         "_rev",
         "_from",
-        "_to",
+        "_to"
       );
       expect(doc.chicken).to.equal(data.chicken);
       expect(doc._id).to.equal(meta._id);
@@ -241,7 +241,7 @@ describe("EdgeCollection API", function () {
         "_id",
         "_rev",
         "_from",
-        "_to",
+        "_to"
       );
       expect(doc.chicken).to.equal(data.chicken);
       expect(doc._id).to.equal(meta._id);
@@ -263,20 +263,20 @@ describe("EdgeCollection API", function () {
           { _key: "Bob" },
           { _key: "Charlie" },
           { _key: "Dave" },
-          { _key: "Eve" },
+          { _key: "Eve" }
         ]),
         knows.import([
           { _from: "person/Alice", _to: "person/Bob" },
           { _from: "person/Bob", _to: "person/Charlie" },
           { _from: "person/Bob", _to: "person/Dave" },
           { _from: "person/Eve", _to: "person/Alice" },
-          { _from: "person/Eve", _to: "person/Bob" },
-        ]),
+          { _from: "person/Eve", _to: "person/Bob" }
+        ])
       ]);
     });
     it("executes traversal", async () => {
       const result = await knows.traversal("person/Alice", {
-        direction: "outbound",
+        direction: "outbound"
       });
       expect(result).to.have.property("visited");
       const visited = result.visited;
@@ -303,7 +303,7 @@ describe("EdgeCollection API", function () {
       await collection.replace(doc as any, {
         sup: "dawg",
         _from: "d/1",
-        _to: "d/2",
+        _to: "d/2"
       });
       const data = await collection.edge((doc as any)._key);
       expect(data).not.to.have.property("potato");
@@ -330,7 +330,7 @@ describe("EdgeCollection API", function () {
       await collection.update(
         doc as any,
         { sup: "dawg", empty: null },
-        { keepNull: false },
+        { keepNull: false }
       );
       const data = await collection.edge((doc as any)._key);
       expect(data).to.have.property("potato", doc.potato);

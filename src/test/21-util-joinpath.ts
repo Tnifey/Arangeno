@@ -6,7 +6,7 @@ describe("Join Path", () => {
     var baseUrl = "../../u1/u2";
     var path = "/security/authenticate";
     expect(joinPath(baseUrl, path)).to.equal(
-      "../../u1/u2/security/authenticate",
+      "../../u1/u2/security/authenticate"
     );
   });
   it("joinPath 2", () => {

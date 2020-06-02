@@ -4,10 +4,10 @@ import { GraphVertexCollection } from "../graph";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
-  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400,
+  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
 );
 
-describe("GraphVertexCollection API", function () {
+describe("GraphVertexCollection API", function() {
   const dbName = `testdb_${Date.now()}`;
   let db: Database;
   let collection: GraphVertexCollection;
@@ -21,9 +21,9 @@ describe("GraphVertexCollection API", function () {
         {
           collection: "knows",
           from: ["person"],
-          to: ["person"],
-        },
-      ],
+          to: ["person"]
+        }
+      ]
     });
     collection = graph.vertexCollection("person");
   });
@@ -158,7 +158,7 @@ describe("GraphVertexCollection API", function () {
       await collection.update(
         doc as any,
         { sup: "dawg", empty: null },
-        { keepNull: false },
+        { keepNull: false }
       );
       const data = await collection.vertex((doc as any)._key);
       expect(data)

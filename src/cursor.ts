@@ -15,7 +15,7 @@ export class ArrayCursor {
     connection: Connection,
     body: any,
     host?: number,
-    allowDirtyRead?: boolean,
+    allowDirtyRead?: boolean
   ) {
     this.extra = body.extra;
     this._connection = connection;
@@ -40,7 +40,7 @@ export class ArrayCursor {
         method: "PUT",
         path: `/_api/cursor/${this._id}`,
         host: this._host,
-        allowDirtyRead: this._allowDirtyRead,
+        allowDirtyRead: this._allowDirtyRead
       });
       this._result.push(...res.body.result);
       this._hasMore = res.body.hasMore;
@@ -79,7 +79,7 @@ export class ArrayCursor {
   }
 
   async each(
-    fn: (value: any, index: number, self: ArrayCursor) => boolean | void,
+    fn: (value: any, index: number, self: ArrayCursor) => boolean | void
   ): Promise<boolean> {
     let index = 0;
     while (this._result.length || this._hasMore) {
@@ -95,7 +95,7 @@ export class ArrayCursor {
   }
 
   async every(
-    fn: (value: any, index: number, self: ArrayCursor) => boolean,
+    fn: (value: any, index: number, self: ArrayCursor) => boolean
   ): Promise<boolean> {
     let index = 0;
     while (this._result.length || this._hasMore) {
@@ -111,7 +111,7 @@ export class ArrayCursor {
   }
 
   async some(
-    fn: (value: any, index: number, self: ArrayCursor) => boolean,
+    fn: (value: any, index: number, self: ArrayCursor) => boolean
   ): Promise<boolean> {
     let index = 0;
     while (this._result.length || this._hasMore) {
@@ -127,7 +127,7 @@ export class ArrayCursor {
   }
 
   async map<T>(
-    fn: (value: any, index: number, self: ArrayCursor) => T,
+    fn: (value: any, index: number, self: ArrayCursor) => T
   ): Promise<T[]> {
     let index = 0;
     let result: any[] = [];
@@ -143,7 +143,7 @@ export class ArrayCursor {
 
   async reduce<T>(
     fn: (accu: T, value: any, index: number, self: ArrayCursor) => T,
-    accu?: T,
+    accu?: T
   ): Promise<T | undefined> {
     let index = 0;
     if (accu === undefined) {
@@ -168,12 +168,12 @@ export class ArrayCursor {
     return this._connection.request(
       {
         method: "DELETE",
-        path: `/_api/cursor/${this._id}`,
+        path: `/_api/cursor/${this._id}`
       },
       () => {
         this._hasMore = false;
         return undefined;
-      },
+      }
     );
   }
 }
