@@ -27,15 +27,15 @@ export enum CollectionType {
 export type DocumentHandle =
   | string
   | {
-      _key?: string;
-      _id?: string;
-    };
+    _key?: string;
+    _id?: string;
+  };
 
 export type IndexHandle =
   | string
   | {
-      id?: string;
-    };
+    id?: string;
+  };
 
 export interface ImportOptions {
   type?: null | "auto" | "documents" | "array";
@@ -132,7 +132,7 @@ export abstract class BaseCollection<T extends object = any>
   protected _get(path: string, qs?: any) {
     return this._connection.request(
       { path: `/_api/collection/${this.name}/${path}`, qs },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -143,21 +143,21 @@ export abstract class BaseCollection<T extends object = any>
         path: `/_api/collection/${this.name}/${path}`,
         body,
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
   get() {
     return this._connection.request(
       { path: `/_api/collection/${this.name}` },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
   exists(): Promise<boolean> {
     return this.get().then(
       () => true,
-      err => {
+      (err) => {
         if (isArangoError(err) && err.errorNum === COLLECTION_NOT_FOUND) {
           return false;
         }
@@ -190,7 +190,7 @@ export abstract class BaseCollection<T extends object = any>
           type: this.type,
         },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -236,7 +236,7 @@ export abstract class BaseCollection<T extends object = any>
         path: `/_api/collection/${this.name}/rename`,
         body: { name },
       },
-      res => res.body,
+      (res) => res.body,
     );
     this.name = name;
     this._idPrefix = `${name}/`;
@@ -258,7 +258,7 @@ export abstract class BaseCollection<T extends object = any>
         path: `/_api/collection/${this.name}`,
         qs: opts,
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -269,7 +269,7 @@ export abstract class BaseCollection<T extends object = any>
         path: `/_api/collection/${this.name}/responsibleShard`,
         body: document,
       },
-      res => res.body.shardId,
+      (res) => res.body.shardId,
     );
   }
 
@@ -282,7 +282,7 @@ export abstract class BaseCollection<T extends object = any>
         },
         () => true,
       )
-      .catch(err => {
+      .catch((err) => {
         if (err.statusCode === 404) {
           return false;
         }
@@ -308,10 +308,10 @@ export abstract class BaseCollection<T extends object = any>
     const { allowDirtyRead = undefined, graceful = false } = opts;
     const result = this._connection.request(
       { path: `/_api/${this._documentPath(documentHandle)}`, allowDirtyRead },
-      res => res.body,
+      (res) => res.body,
     );
     if (!graceful) return result;
-    return result.catch(err => {
+    return result.catch((err) => {
       if (isArangoError(err) && err.errorNum === DOCUMENT_NOT_FOUND) {
         return null;
       }
@@ -341,7 +341,7 @@ export abstract class BaseCollection<T extends object = any>
         qs: opts,
         headers,
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -367,7 +367,7 @@ export abstract class BaseCollection<T extends object = any>
         qs: opts,
         headers,
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -379,7 +379,7 @@ export abstract class BaseCollection<T extends object = any>
         body: newValues,
         qs: opts,
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -400,7 +400,7 @@ export abstract class BaseCollection<T extends object = any>
         qs: opts,
         headers,
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -411,7 +411,7 @@ export abstract class BaseCollection<T extends object = any>
           path: "/_api/document",
           qs: { type, collection: this.name },
         },
-        res => res.body.documents,
+        (res) => res.body.documents,
       );
     }
 
@@ -421,7 +421,7 @@ export abstract class BaseCollection<T extends object = any>
         path: "/_api/simple/all-keys",
         body: { type, collection: this.name },
       },
-      res => res.body.result,
+      (res) => res.body.result,
     );
   }
 
@@ -435,7 +435,7 @@ export abstract class BaseCollection<T extends object = any>
           collection: this.name,
         },
       },
-      res => new ArrayCursor(this._connection, res.body, res.arangojsHostId),
+      (res) => new ArrayCursor(this._connection, res.body, res.arangojsHostId),
     );
   }
 
@@ -446,7 +446,7 @@ export abstract class BaseCollection<T extends object = any>
         path: "/_api/simple/any",
         body: { collection: this.name },
       },
-      res => res.body.document,
+      (res) => res.body.document,
     );
   }
 
@@ -463,7 +463,7 @@ export abstract class BaseCollection<T extends object = any>
           collection: this.name,
         },
       },
-      res => res.body.result,
+      (res) => res.body.result,
     );
   }
 
@@ -480,7 +480,7 @@ export abstract class BaseCollection<T extends object = any>
           collection: this.name,
         },
       },
-      res => res.body.result,
+      (res) => res.body.result,
     );
   }
 
@@ -495,7 +495,7 @@ export abstract class BaseCollection<T extends object = any>
           collection: this.name,
         },
       },
-      res => new ArrayCursor(this._connection, res.body, res.arangojsHostId),
+      (res) => new ArrayCursor(this._connection, res.body, res.arangojsHostId),
     );
   }
 
@@ -509,7 +509,7 @@ export abstract class BaseCollection<T extends object = any>
           collection: this.name,
         },
       },
-      res => res.body.document,
+      (res) => res.body.document,
     );
   }
 
@@ -524,7 +524,7 @@ export abstract class BaseCollection<T extends object = any>
           collection: this.name,
         },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -544,7 +544,7 @@ export abstract class BaseCollection<T extends object = any>
           collection: this.name,
         },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -560,7 +560,7 @@ export abstract class BaseCollection<T extends object = any>
           collection: this.name,
         },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -574,7 +574,7 @@ export abstract class BaseCollection<T extends object = any>
           collection: this.name,
         },
       },
-      res => res.body.documents,
+      (res) => res.body.documents,
     );
   }
 
@@ -589,7 +589,7 @@ export abstract class BaseCollection<T extends object = any>
           collection: this.name,
         },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -598,7 +598,7 @@ export abstract class BaseCollection<T extends object = any>
     { type = "auto", ...opts }: ImportOptions = {},
   ): Promise<ImportResult> {
     if (Array.isArray(data)) {
-      data = data.map(line => JSON.stringify(line)).join("\r\n") + "\r\n";
+      data = data.map((line) => JSON.stringify(line)).join("\r\n") + "\r\n";
     }
     return this._connection.request(
       {
@@ -612,7 +612,7 @@ export abstract class BaseCollection<T extends object = any>
           collection: this.name,
         },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -622,14 +622,14 @@ export abstract class BaseCollection<T extends object = any>
         path: "/_api/index",
         qs: { collection: this.name },
       },
-      res => res.body.indexes,
+      (res) => res.body.indexes,
     );
   }
 
   index(indexHandle: IndexHandle) {
     return this._connection.request(
       { path: `/_api/index/${this._indexHandle(indexHandle)}` },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -641,7 +641,7 @@ export abstract class BaseCollection<T extends object = any>
         body: details,
         qs: { collection: this.name },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -656,7 +656,7 @@ export abstract class BaseCollection<T extends object = any>
         method: "DELETE",
         path: `/_api/index/${this._indexHandle(indexHandle)}`,
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -671,7 +671,7 @@ export abstract class BaseCollection<T extends object = any>
         body: { ...opts, type: "cap" },
         qs: { collection: this.name },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -689,7 +689,7 @@ export abstract class BaseCollection<T extends object = any>
         body: { unique: false, ...opts, type: "hash", fields: fields },
         qs: { collection: this.name },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -707,7 +707,7 @@ export abstract class BaseCollection<T extends object = any>
         body: { unique: false, ...opts, type: "skiplist", fields: fields },
         qs: { collection: this.name },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -725,7 +725,7 @@ export abstract class BaseCollection<T extends object = any>
         body: { unique: false, ...opts, type: "persistent", fields: fields },
         qs: { collection: this.name },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -740,7 +740,7 @@ export abstract class BaseCollection<T extends object = any>
         body: { ...opts, fields, type: "geo" },
         qs: { collection: this.name },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -755,7 +755,7 @@ export abstract class BaseCollection<T extends object = any>
         body: { fields, minLength, type: "fulltext" },
         qs: { collection: this.name },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -772,14 +772,16 @@ export abstract class BaseCollection<T extends object = any>
           collection: this.name,
         },
       },
-      res => new ArrayCursor(this._connection, res.body, res.arangojsHostId),
+      (res) => new ArrayCursor(this._connection, res.body, res.arangojsHostId),
     );
   }
 }
 
-export class DocumentCollection<T extends object = any> extends BaseCollection<
-  T
-> {
+// deno fmt cause trailing comma error
+// deno-fmt-ignore
+// prettier-ignore
+export class DocumentCollection<T extends object = any>
+  extends BaseCollection<T> {
   type = CollectionType.DOCUMENT_COLLECTION;
   constructor(connection: Connection, name: string) {
     super(connection, name);
@@ -804,7 +806,7 @@ export class DocumentCollection<T extends object = any> extends BaseCollection<
             collection: this.name,
           },
         },
-        res => res.body,
+        (res) => res.body,
       );
     }
 
@@ -815,7 +817,7 @@ export class DocumentCollection<T extends object = any> extends BaseCollection<
         body: data,
         qs: opts,
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 }
@@ -866,8 +868,8 @@ export class EdgeCollection<T extends object = any> extends BaseCollection<T> {
       const fromId = this._documentHandle(fromIdOrOpts as DocumentHandle);
       toId = this._documentHandle(toId);
       if (Array.isArray(data)) {
-        data = data.map(data =>
-          Object.assign(data, { _from: fromId, _to: toId }),
+        data = data.map((data) =>
+          Object.assign(data, { _from: fromId, _to: toId })
         );
       } else {
         data = Object.assign(data, { _from: fromId, _to: toId });
@@ -896,7 +898,7 @@ export class EdgeCollection<T extends object = any> extends BaseCollection<T> {
             to: (data as any)._to,
           },
         },
-        res => res.body,
+        (res) => res.body,
       );
     }
 
@@ -910,7 +912,7 @@ export class EdgeCollection<T extends object = any> extends BaseCollection<T> {
           collection: this.name,
         },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -923,7 +925,7 @@ export class EdgeCollection<T extends object = any> extends BaseCollection<T> {
           vertex: this._documentHandle(documentHandle),
         },
       },
-      res => res.body.edges,
+      (res) => res.body.edges,
     );
   }
 
@@ -950,15 +952,14 @@ export class EdgeCollection<T extends object = any> extends BaseCollection<T> {
           edgeCollection: this.name,
         },
       },
-      res => res.body.result,
+      (res) => res.body.result,
     );
   }
 }
 
 export function constructCollection(connection: Connection, data: any) {
-  const Collection =
-    data.type === CollectionType.EDGE_COLLECTION
-      ? EdgeCollection
-      : DocumentCollection;
+  const Collection = data.type === CollectionType.EDGE_COLLECTION
+    ? EdgeCollection
+    : DocumentCollection;
   return new Collection(connection, data.name);
 }

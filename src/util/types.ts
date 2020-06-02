@@ -133,12 +133,16 @@ export interface UpdateMetadata extends DocumentMetadata {
   _oldRev: string;
 }
 
-export type Document<T extends object = any> = { [K in keyof T]: T[K] } &
-  DocumentMetadata & { _from?: string; _to?: string } & {
+export type Document<T extends object = any> =
+  & { [K in keyof T]: T[K] }
+  & DocumentMetadata
+  & { _from?: string; _to?: string }
+  & {
     [key: string]: any;
   };
-export type DocumentData<T extends object = any> = { [K in keyof T]: T[K] } &
-  Partial<DocumentMetadata>;
+export type DocumentData<T extends object = any> =
+  & { [K in keyof T]: T[K] }
+  & Partial<DocumentMetadata>;
 export type Edge<T extends object = any> = Document<T> & {
   _from: string;
   _to: string;

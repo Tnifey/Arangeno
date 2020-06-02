@@ -78,14 +78,14 @@ export class ArangoAnalyzer {
   get(): Promise<AnalyzerDescription> {
     return this._connection.request(
       { path: `/_api/analyzer/${this.name}` },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
   exists() {
     return this.get().then(
       () => true,
-      err => {
+      (err) => {
         if (isArangoError(err) && err.errorNum === ANALYZER_NOT_FOUND) {
           return false;
         }
@@ -101,7 +101,7 @@ export class ArangoAnalyzer {
         path: "/_api/analyzer",
         body: { name: this.name, ...options },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -112,7 +112,7 @@ export class ArangoAnalyzer {
         path: `/_api/analyzer/${this.name}`,
         qs: { force },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 }

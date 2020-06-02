@@ -11,8 +11,8 @@ const xhr = (
   const req = new Request(url, options);
 
   fetch(req)
-    .catch(err => err)
-    .then(async res => {
+    .catch((err) => err)
+    .then(async (res) => {
       if (res instanceof Error) {
         throw res;
       } else {

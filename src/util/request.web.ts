@@ -55,14 +55,10 @@ export function createRequest(baseUrl: string, agentOptions: any) {
     cb: Errback<ArangojsResponse>,
   ) {
     $url.pathname = url.pathname
-      ? $url.pathname
-        ? joinPath($url.pathname, url.pathname)
-        : url.pathname
+      ? $url.pathname ? joinPath($url.pathname, url.pathname) : url.pathname
       : $url.pathname;
     $url.search = url.search
-      ? $url.search
-        ? `${$url.search}&${url.search.slice(1)}`
-        : url.search
+      ? $url.search ? `${$url.search}&${url.search.slice(1)}` : url.search
       : $url.search;
 
     if (!headers["authorization"]) {

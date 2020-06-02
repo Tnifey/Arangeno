@@ -39,10 +39,10 @@ export type TransactionCollections =
   | ArangoCollection
   | (string | ArangoCollection)[]
   | {
-      exclusive?: string | ArangoCollection | (string | ArangoCollection)[];
-      write?: string | ArangoCollection | (string | ArangoCollection)[];
-      read?: string | ArangoCollection | (string | ArangoCollection)[];
-    };
+    exclusive?: string | ArangoCollection | (string | ArangoCollection)[];
+    write?: string | ArangoCollection | (string | ArangoCollection)[];
+    read?: string | ArangoCollection | (string | ArangoCollection)[];
+  };
 
 export type TransactionOptions = {
   allowImplicit?: boolean;
@@ -189,7 +189,7 @@ export class Database {
         method: "GET",
         path: "/_api/version",
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -203,7 +203,7 @@ export class Database {
     }
     const urls: string[] = await this._connection.request(
       { path: "/_api/cluster/endpoints" },
-      res => res.body.endpoints.map((endpoint: any) => endpoint.endpoint),
+      (res) => res.body.endpoints.map((endpoint: any) => endpoint.endpoint),
     );
     this._connection.addToHostList(urls);
   }
@@ -221,7 +221,7 @@ export class Database {
         path: "/_open/auth",
         body: { username, password },
       },
-      res => {
+      (res) => {
         this.useBearerAuth(res.body.jwt);
         return res.body.jwt;
       },
@@ -251,14 +251,14 @@ export class Database {
   get() {
     return this._connection.request(
       { path: "/_api/database/current" },
-      res => res.body.result,
+      (res) => res.body.result,
     );
   }
 
   exists(): Promise<boolean> {
     return this.get().then(
       () => true,
-      err => {
+      (err) => {
         if (isArangoError(err) && err.errorNum === DATABASE_NOT_FOUND) {
           return false;
         }
@@ -277,21 +277,21 @@ export class Database {
         path: "/_api/database",
         body: { users, name: databaseName },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
   listDatabases() {
     return this._connection.request(
       { path: "/_api/database" },
-      res => res.body.result,
+      (res) => res.body.result,
     );
   }
 
   listUserDatabases() {
     return this._connection.request(
       { path: "/_api/database/user" },
-      res => res.body.result,
+      (res) => res.body.result,
     );
   }
 
@@ -301,7 +301,7 @@ export class Database {
         method: "DELETE",
         path: `/_api/database/${databaseName}`,
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
   //#endregion
@@ -325,7 +325,7 @@ export class Database {
         path: "/_api/collection",
         qs: { excludeSystem },
       },
-      res =>
+      (res) =>
         this._connection.arangoMajor <= 2
           ? res.body.collections
           : res.body.result,
@@ -337,7 +337,7 @@ export class Database {
   ): Promise<ArangoCollection[]> {
     const collections = await this.listCollections(excludeSystem);
     return collections.map((data: any) =>
-      constructCollection(this._connection, data),
+      constructCollection(this._connection, data)
     );
   }
 
@@ -350,8 +350,8 @@ export class Database {
             method: "PUT",
             path: `/_api/collection/${data.name}/truncate`,
           },
-          res => res.body,
-        ),
+          (res) => res.body,
+        )
       ),
     );
   }
@@ -365,7 +365,7 @@ export class Database {
   listViews(): Promise<ViewDescription[]> {
     return this._connection.request(
       { path: "/_api/view" },
-      res => res.body.result,
+      (res) => res.body.result,
     );
   }
 
@@ -383,13 +383,13 @@ export class Database {
   listAnalyzers(): Promise<AnalyzerDescription[]> {
     return this._connection.request(
       { path: "/_api/analyzer" },
-      res => res.body.result,
+      (res) => res.body.result,
     );
   }
 
   async analyzers(): Promise<ArangoAnalyzer[]> {
     const analyzers = await this.listAnalyzers();
-    return analyzers.map(data => this.analyzer(data.name));
+    return analyzers.map((data) => this.analyzer(data.name));
   }
   //#endregion
 
@@ -409,7 +409,7 @@ export class Database {
           ...options,
         },
       },
-      res => res.body.result,
+      (res) => res.body.result,
     );
   }
 
@@ -466,20 +466,20 @@ export class Database {
           ...options,
         },
       },
-      res => new ArangoTransaction(this._connection, res.body.result.id),
+      (res) => new ArangoTransaction(this._connection, res.body.result.id),
     );
   }
 
   listTransactions(): Promise<TransactionDetails[]> {
     return this._connection.request(
       { path: "/_api/transaction" },
-      res => res.body.transactions,
+      (res) => res.body.transactions,
     );
   }
 
   async transactions(): Promise<ArangoTransaction[]> {
     const transactions = await this.listTransactions();
-    return transactions.map(data => this.transaction(data.id));
+    return transactions.map((data) => this.transaction(data.id));
   }
   //#endregion
 
@@ -491,7 +491,7 @@ export class Database {
   listGraphs() {
     return this._connection.request(
       { path: "/_api/gharial" },
-      res => res.body.graphs,
+      (res) => res.body.graphs,
     );
   }
 
@@ -531,7 +531,7 @@ export class Database {
         allowDirtyRead,
         timeout,
       },
-      res =>
+      (res) =>
         new ArrayCursor(
           this._connection,
           res.body,
@@ -566,7 +566,7 @@ export class Database {
         path: "/_api/explain",
         body: { options: opts, query, bindVars },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -585,7 +585,7 @@ export class Database {
         path: "/_api/query",
         body: { query },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -595,7 +595,7 @@ export class Database {
         method: "GET",
         path: "/_api/query/properties",
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -606,7 +606,7 @@ export class Database {
         path: "/_api/query/properties",
         body: opts,
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -616,7 +616,7 @@ export class Database {
         method: "GET",
         path: "/_api/query/current",
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -626,7 +626,7 @@ export class Database {
         method: "GET",
         path: "/_api/query/slow",
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -655,7 +655,7 @@ export class Database {
   listFunctions() {
     return this._connection.request(
       { path: "/_api/aqlfunction" },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -666,7 +666,7 @@ export class Database {
         path: "/_api/aqlfunction",
         body: { name, code },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -677,14 +677,14 @@ export class Database {
         path: `/_api/aqlfunction/${name}`,
         body: { group },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
   //#endregion
 
   //#region services
   listServices() {
-    return this._connection.request({ path: "/_api/foxx" }, res => res.body);
+    return this._connection.request({ path: "/_api/foxx" }, (res) => res.body);
   }
 
   async installService(mount: string, source: any, opts: ServiceOptions = {}) {
@@ -702,7 +702,7 @@ export class Database {
         isBinary: true,
         qs: { ...qs, mount },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -721,7 +721,7 @@ export class Database {
         isBinary: true,
         qs: { ...qs, mount },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -740,7 +740,7 @@ export class Database {
         isBinary: true,
         qs: { ...qs, mount },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -761,7 +761,7 @@ export class Database {
         path: "/_api/foxx/service",
         qs: { mount },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -771,7 +771,7 @@ export class Database {
         path: "/_api/foxx/configuration",
         qs: { mount, minimal },
       },
-      res => res.body,
+      (res) => res.body,
     );
     if (
       !minimal ||
@@ -798,7 +798,7 @@ export class Database {
         body: cfg,
         qs: { mount, minimal },
       },
-      res => res.body,
+      (res) => res.body,
     );
     if (
       minimal ||
@@ -830,7 +830,7 @@ export class Database {
         body: cfg,
         qs: { mount, minimal },
       },
-      res => res.body,
+      (res) => res.body,
     );
     if (
       minimal ||
@@ -856,7 +856,7 @@ export class Database {
         path: "/_api/foxx/dependencies",
         qs: { mount, minimal },
       },
-      res => res.body,
+      (res) => res.body,
     );
     if (
       !minimal ||
@@ -883,7 +883,7 @@ export class Database {
         body: cfg,
         qs: { mount, minimal },
       },
-      res => res.body,
+      (res) => res.body,
     );
     if (
       minimal ||
@@ -915,7 +915,7 @@ export class Database {
         body: cfg,
         qs: { mount, minimal },
       },
-      res => res.body,
+      (res) => res.body,
     );
     if (
       minimal ||
@@ -942,7 +942,7 @@ export class Database {
         path: "/_api/foxx/development",
         qs: { mount },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -953,7 +953,7 @@ export class Database {
         path: "/_api/foxx/development",
         qs: { mount },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -963,7 +963,7 @@ export class Database {
         path: "/_api/foxx/scripts",
         qs: { mount },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -975,7 +975,7 @@ export class Database {
         body: args,
         qs: { mount },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -989,7 +989,7 @@ export class Database {
           mount,
         },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -999,7 +999,7 @@ export class Database {
         path: "/_api/foxx/readme",
         qs: { mount },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -1009,7 +1009,7 @@ export class Database {
         path: "/_api/foxx/swagger",
         qs: { mount },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -1021,7 +1021,7 @@ export class Database {
         qs: { mount },
         expectBinary: true,
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 

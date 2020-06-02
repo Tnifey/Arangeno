@@ -45,8 +45,7 @@ export interface ArangoSearchViewProperties {
 }
 
 export interface ArangoSearchViewPropertiesResponse
-  extends ArangoViewResponse,
-    ArangoSearchViewProperties {
+  extends ArangoViewResponse, ArangoSearchViewProperties {
   type: ViewType.ARANGOSEARCH_VIEW;
 }
 
@@ -59,26 +58,26 @@ export interface ArangoSearchViewPropertiesOptions {
   writebufferSizeMax?: number;
   consolidationPolicy?:
     | {
-        type: "bytes_accum";
-        threshold?: number;
-      }
+      type: "bytes_accum";
+      threshold?: number;
+    }
     | {
-        type: "tier";
-        lookahead?: number;
-        segments_min?: number;
-        segments_max?: number;
-        segments_bytes_max?: number;
-        segments_bytes_floor?: number;
-      };
+      type: "tier";
+      lookahead?: number;
+      segments_min?: number;
+      segments_max?: number;
+      segments_bytes_max?: number;
+      segments_bytes_floor?: number;
+    };
   primarySort?: (
     | {
-        field: string;
-        direction: "desc" | "asc";
-      }
+      field: string;
+      direction: "desc" | "asc";
+    }
     | {
-        field: string;
-        asc: boolean;
-      }
+      field: string;
+      asc: boolean;
+    }
   )[];
   links?: {
     [key: string]: ArangoSearchViewCollectionLink | undefined;
@@ -100,14 +99,14 @@ export abstract class BaseView implements ArangoView {
   get(): Promise<ArangoViewResponse> {
     return this._connection.request(
       { path: `/_api/view/${this.name}` },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
   exists() {
     return this.get().then(
       () => true,
-      err => {
+      (err) => {
         if (isArangoError(err) && err.errorNum === VIEW_NOT_FOUND) {
           return false;
         }
@@ -123,7 +122,7 @@ export abstract class BaseView implements ArangoView {
         path: `/_api/view/${this.name}/rename`,
         body: { name },
       },
-      res => res.body,
+      (res) => res.body,
     );
     this.name = name;
     return result;
@@ -135,7 +134,7 @@ export abstract class BaseView implements ArangoView {
         method: "DELETE",
         path: `/_api/view/${this.name}`,
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 }
@@ -156,14 +155,14 @@ export class ArangoSearchView extends BaseView {
           type: this.type,
         },
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
   properties(): Promise<ArangoSearchViewPropertiesResponse> {
     return this._connection.request(
       { path: `/_api/view/${this.name}/properties` },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -176,7 +175,7 @@ export class ArangoSearchView extends BaseView {
         path: `/_api/view/${this.name}/properties`,
         body: properties,
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 
@@ -189,7 +188,7 @@ export class ArangoSearchView extends BaseView {
         path: `/_api/view/${this.name}/properties`,
         body: properties,
       },
-      res => res.body,
+      (res) => res.body,
     );
   }
 }

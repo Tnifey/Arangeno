@@ -78,15 +78,15 @@ export type Config =
   | string
   | string[]
   | Partial<{
-      url: string | string[];
-      isAbsolute: boolean;
-      arangoVersion: number;
-      loadBalancingStrategy: LoadBalancingStrategy;
-      maxRetries: false | number;
-      agent: any;
-      agentOptions: { [key: string]: any };
-      headers: { [key: string]: string };
-    }>;
+    url: string | string[];
+    isAbsolute: boolean;
+    arangoVersion: number;
+    loadBalancingStrategy: LoadBalancingStrategy;
+    maxRetries: false | number;
+    agent: any;
+    agentOptions: { [key: string]: any };
+    headers: { [key: string]: string };
+  }>;
 
 export class Connection {
   private _activeTasks: number = 0;
@@ -118,14 +118,12 @@ export class Connection {
       this._databaseName = false;
     }
     this._agent = config.agent;
-    this._agentOptions = isBrowser
-      ? { ...config.agentOptions! }
-      : {
-          maxSockets: 3,
-          keepAlive: true,
-          keepAliveMsecs: 1000,
-          ...config.agentOptions,
-        };
+    this._agentOptions = isBrowser ? { ...config.agentOptions! } : {
+      maxSockets: 3,
+      keepAlive: true,
+      keepAliveMsecs: 1000,
+      ...config.agentOptions,
+    };
     this._maxTasks = this._agentOptions.maxSockets || 3;
     if (this._agentOptions.keepAlive) this._maxTasks *= 2;
 
@@ -141,9 +139,7 @@ export class Connection {
     }
 
     const urls = config.url
-      ? Array.isArray(config.url)
-        ? config.url
-        : [config.url]
+      ? Array.isArray(config.url) ? config.url : [config.url]
       : ["http://localhost:8529"];
     this.addToHostList(urls);
 
@@ -241,17 +237,17 @@ export class Connection {
   }
 
   addToHostList(urls: string | string[]): number[] {
-    const cleanUrls = (Array.isArray(urls) ? urls : [urls]).map(url =>
-      sanitizeUrl(url),
+    const cleanUrls = (Array.isArray(urls) ? urls : [urls]).map((url) =>
+      sanitizeUrl(url)
     );
-    const newUrls = cleanUrls.filter(url => this._urls.indexOf(url) === -1);
+    const newUrls = cleanUrls.filter((url) => this._urls.indexOf(url) === -1);
     this._urls.push(...newUrls);
     this._hosts.push(
       ...newUrls.map((url: string) =>
-        createRequest(url, this._agentOptions, this._agent),
+        createRequest(url, this._agentOptions, this._agent)
       ),
     );
-    return cleanUrls.map(url => this._urls.indexOf(url));
+    return cleanUrls.map((url) => this._urls.indexOf(url));
   }
 
   get arangoMajor() {

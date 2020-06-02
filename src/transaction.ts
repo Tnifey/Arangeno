@@ -20,7 +20,7 @@ export class ArangoTransaction {
   exists(): Promise<boolean> {
     return this.get().then(
       () => true,
-      err => {
+      (err) => {
         if (isArangoError(err) && err.errorNum === TRANSACTION_NOT_FOUND) {
           return false;
         }
@@ -34,7 +34,7 @@ export class ArangoTransaction {
       {
         path: `/_api/transaction/${this.id}`,
       },
-      res => res.body.result,
+      (res) => res.body.result,
     );
   }
 
@@ -44,7 +44,7 @@ export class ArangoTransaction {
         method: "PUT",
         path: `/_api/transaction/${this.id}`,
       },
-      res => res.body.result,
+      (res) => res.body.result,
     );
   }
 
@@ -54,7 +54,7 @@ export class ArangoTransaction {
         method: "DELETE",
         path: `/_api/transaction/${this.id}`,
       },
-      res => res.body.result,
+      (res) => res.body.result,
     );
   }
 
