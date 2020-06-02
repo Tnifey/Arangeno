@@ -6,10 +6,10 @@ const range = (n: number): number[] => Array.from(Array(n).keys());
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
-  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
+  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400,
 );
 
-describe("Accessing collections", function() {
+describe("Accessing collections", function () {
   const name = `testdb_${Date.now()}`;
   let db: Database;
   let builtinSystemCollections: string[];
@@ -49,29 +49,31 @@ describe("Accessing collections", function() {
     });
   });
   describe("database.listCollections", () => {
-    const nonSystemCollectionNames = range(4).map(i => `c_${Date.now()}_${i}`);
-    const systemCollectionNames = range(4).map(i => `_c_${Date.now()}_${i}`);
+    const nonSystemCollectionNames = range(4).map((i) =>
+      `c_${Date.now()}_${i}`
+    );
+    const systemCollectionNames = range(4).map((i) => `_c_${Date.now()}_${i}`);
     before(async () => {
       await Promise.all([
-        ...nonSystemCollectionNames.map(name => db.collection(name).create()),
-        ...systemCollectionNames.map(name =>
+        ...nonSystemCollectionNames.map((name) => db.collection(name).create()),
+        ...systemCollectionNames.map((name) =>
           db.collection(name).create({ isSystem: true })
-        )
+        ),
       ]);
     });
     after(async () => {
       await Promise.all([
-        ...nonSystemCollectionNames.map(name => db.collection(name).drop()),
-        ...systemCollectionNames.map(name =>
+        ...nonSystemCollectionNames.map((name) => db.collection(name).drop()),
+        ...systemCollectionNames.map((name) =>
           db.collection(name).drop({ isSystem: true })
-        )
+        ),
       ]);
     });
     it("fetches information about all non-system collections", async () => {
       const collections = await db.listCollections();
       expect(collections.length).to.equal(nonSystemCollectionNames.length);
       expect(collections.map((c: any) => c.name).sort()).to.eql(
-        nonSystemCollectionNames
+        nonSystemCollectionNames,
       );
     });
     it("includes system collections if explicitly passed false", async () => {
@@ -82,30 +84,32 @@ describe("Accessing collections", function() {
         .sort();
       expect(collections.length).to.be.at.least(allCollectionNames.length);
       expect(collections.map((c: any) => c.name).sort()).to.eql(
-        allCollectionNames
+        allCollectionNames,
       );
     });
   });
   describe("database.collections", () => {
-    const documentCollectionNames = range(4).map(i => `dc_${Date.now()}_${i}`);
-    const edgeCollectionNames = range(4).map(i => `ec_${Date.now()}_${i}`);
-    const systemCollectionNames = range(4).map(i => `_c_${Date.now()}_${i}`);
+    const documentCollectionNames = range(4).map((i) =>
+      `dc_${Date.now()}_${i}`
+    );
+    const edgeCollectionNames = range(4).map((i) => `ec_${Date.now()}_${i}`);
+    const systemCollectionNames = range(4).map((i) => `_c_${Date.now()}_${i}`);
     before(async () => {
       await Promise.all([
-        ...documentCollectionNames.map(name => db.collection(name).create()),
-        ...edgeCollectionNames.map(name => db.edgeCollection(name).create()),
-        ...systemCollectionNames.map(name =>
+        ...documentCollectionNames.map((name) => db.collection(name).create()),
+        ...edgeCollectionNames.map((name) => db.edgeCollection(name).create()),
+        ...systemCollectionNames.map((name) =>
           db.collection(name).create({ isSystem: true })
-        )
+        ),
       ]);
     });
     after(async () => {
       await Promise.all([
-        ...documentCollectionNames.map(name => db.collection(name).drop()),
-        ...edgeCollectionNames.map(name => db.edgeCollection(name).drop()),
-        ...systemCollectionNames.map(name =>
+        ...documentCollectionNames.map((name) => db.collection(name).drop()),
+        ...edgeCollectionNames.map((name) => db.edgeCollection(name).drop()),
+        ...systemCollectionNames.map((name) =>
           db.collection(name).drop({ isSystem: true })
-        )
+        ),
       ]);
     });
     it("creates DocumentCollection and EdgeCollection instances", async () => {
@@ -117,37 +121,37 @@ describe("Accessing collections", function() {
         .filter((c: any) => c instanceof EdgeCollection)
         .sort();
       expect(documentCollections.length).to.equal(
-        documentCollectionNames.length
+        documentCollectionNames.length,
       );
       expect(documentCollections.map((c: any) => c.name).sort()).to.eql(
-        documentCollectionNames
+        documentCollectionNames,
       );
       expect(edgeCollections.length).to.equal(edgeCollectionNames.length);
       expect(edgeCollections.map((c: any) => c.name).sort()).to.eql(
-        edgeCollectionNames
+        edgeCollectionNames,
       );
     });
     it("includes system collections if explicitly passed false", async () => {
       const collections = await db.collections(false);
       const documentCollections = collections.filter(
-        (c: any) => c instanceof DocumentCollection
+        (c: any) => c instanceof DocumentCollection,
       );
       const edgeCollections = collections.filter(
-        (c: any) => c instanceof EdgeCollection
+        (c: any) => c instanceof EdgeCollection,
       );
       const allDocumentCollectionNames = documentCollectionNames
         .concat(systemCollectionNames)
         .concat(builtinSystemCollections)
         .sort();
       expect(documentCollections.length).to.be.at.least(
-        allDocumentCollectionNames.length
+        allDocumentCollectionNames.length,
       );
       expect(documentCollections.map((c: any) => c.name).sort()).to.eql(
-        allDocumentCollectionNames
+        allDocumentCollectionNames,
       );
       expect(edgeCollections.length).to.be.at.least(edgeCollectionNames.length);
       expect(edgeCollections.map((c: any) => c.name).sort()).to.eql(
-        edgeCollectionNames
+        edgeCollectionNames,
       );
     });
   });

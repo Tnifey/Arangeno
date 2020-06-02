@@ -1,24 +1,16 @@
-import { format as formatUrl, parse as parseUrl } from "url";
-import {
-  Agent as HttpAgent,
-  ClientRequest,
-  ClientRequestArgs,
-  IncomingMessage,
-  request as httpRequest,
-} from "https://deno.land/std/http/server.ts";
-
 import { joinPath } from "./joinPath.ts";
 import { Errback } from "./types.ts";
 import xhr from "./xhr.ts";
 
-export type ArangojsResponse = IncomingMessage & {
-  request: ClientRequest;
+export type ArangojsResponse = Response & {
+  request: Request;
   body?: any;
   arangojsHostId?: number;
+  data?: any;
 };
 
 export type ArangojsError = Error & {
-  request: ClientRequest;
+  request: Request;
 };
 
 export interface RequestOptions {
@@ -41,60 +33,67 @@ function omit<T>(obj: T, keys: (keyof T)[]): T {
   return result;
 }
 
+export function createRequest(
+  baseUrl: string,
+  agentOptions: any,
+  ...args: any[]
+): any;
 export function createRequest(baseUrl: string, agentOptions: any) {
-  const { auth, ...baseUrlParts } = parseUrl(baseUrl);
+  const $url = new URL(baseUrl);
+  const { username = "root", password = "", ..._bup } = $url;
+
+  $url.username = "";
+  $url.password = "";
+
   const options = omit(agentOptions, [
     "keepAlive",
     "keepAliveMsecs",
-    "maxSockets"
+    "maxSockets",
   ]);
   return function request(
     { method, url, headers, body, timeout, expectBinary }: RequestOptions,
-    cb: Errback<ArangojsResponse>
+    cb: Errback<ArangojsResponse>,
   ) {
-    const urlParts = {
-      ...baseUrlParts,
-      pathname: url.pathname
-        ? baseUrlParts.pathname
-          ? joinPath(baseUrlParts.pathname, url.pathname)
-          : url.pathname
-        : baseUrlParts.pathname,
-      search: url.search
-        ? baseUrlParts.search
-          ? `${baseUrlParts.search}&${url.search.slice(1)}`
-          : url.search
-        : baseUrlParts.search
-    };
+    $url.pathname = url.pathname
+      ? $url.pathname ? joinPath($url.pathname, url.pathname) : url.pathname
+      : $url.pathname;
+    $url.search = url.search
+      ? $url.search ? `${$url.search}&${url.search.slice(1)}` : url.search
+      : $url.search;
+
     if (!headers["authorization"]) {
-      headers["authorization"] = `Basic ${btoa(auth || "root:")}`;
+      const basic = btoa(`${username}:${password}`);
+      headers["authorization"] = `Basic ${basic}`;
     }
 
     let callback: Errback<ArangojsResponse> = (err, res) => {
       callback = () => undefined;
       cb(err, res);
     };
-    const req = xhr(
-      {
-        responseType: expectBinary ? "blob" : "text",
-        ...options,
-        url: formatUrl(urlParts),
-        withCredentials: true,
-        useXDR: true,
-        body,
-        method,
-        headers,
-        timeout
-      },
-      (err: Error | null, res?: any) => {
-        if (!err) {
-          if (!res.body) res.body = "";
-          callback(null, res as ArangojsResponse);
-        } else {
-          const error = err as ArangojsError;
-          error.request = req;
-          callback(error);
-        }
+
+    const payload: RequestInit = {
+      responseType: expectBinary ? "blob" : "text",
+      ...options,
+      url: $url.href,
+      withCredentials: true,
+      credentials: "include",
+      useXDR: true,
+      mode: "cors",
+      body,
+      method,
+      headers,
+      timeout,
+    };
+
+    const req = xhr(payload, async (err: Error | null, res?: any) => {
+      if (!err) {
+        if (!res.body) res.body = "";
+        callback(null, res as ArangojsResponse);
+      } else {
+        const error = err as ArangojsError;
+        error.request = req;
+        callback(error);
       }
-    );
+    });
   };
 }

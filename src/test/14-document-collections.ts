@@ -4,11 +4,11 @@ import { DocumentCollection } from "../collection";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
-  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
+  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400,
 );
 const it3x = ARANGO_VERSION >= 30000 ? it : it.skip;
 
-describe("DocumentCollection API", function() {
+describe("DocumentCollection API", function () {
   const name = `testdb_${Date.now()}`;
   let db: Database;
   let collection: DocumentCollection;
@@ -206,7 +206,7 @@ describe("DocumentCollection API", function() {
       await collection.update(
         doc as any,
         { sup: "dawg", empty: null },
-        { keepNull: false }
+        { keepNull: false },
       );
       const data = await collection.document((doc as any)._key);
       expect(data)

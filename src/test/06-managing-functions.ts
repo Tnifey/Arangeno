@@ -3,11 +3,11 @@ import { Database } from "../arangojs";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
-  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
+  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400,
 );
 const it34 = ARANGO_VERSION >= 30400 ? it : it.skip;
 
-describe("Managing functions", function() {
+describe("Managing functions", function () {
   const name = `testdb_${Date.now()}`;
   let db: Database;
   before(async () => {
@@ -41,14 +41,14 @@ describe("Managing functions", function() {
       expect(info.result[0]).to.eql({
         name,
         code,
-        isDeterministic: false
+        isDeterministic: false,
       });
     });
     describe("database.createFunction", () => {
       it("should create a function", async () => {
         const info = await db.createFunction(
           "myfunctions::temperature::celsiustofahrenheit2",
-          "function (celsius) { return celsius * 1.8 + 32; }"
+          "function (celsius) { return celsius * 1.8 + 32; }",
         );
         expect(info).to.have.property("code", 201);
         expect(info).to.have.property("error", false);
@@ -59,11 +59,12 @@ describe("Managing functions", function() {
         const name = "myfunctions::temperature::celsiustofahrenheit";
         await db.createFunction(
           name,
-          "function (celsius) { return celsius * 1.8 + 32; }"
+          "function (celsius) { return celsius * 1.8 + 32; }",
         );
         const info = await db.dropFunction(name);
-        if (ARANGO_VERSION >= 30400)
+        if (ARANGO_VERSION >= 30400) {
           expect(info).to.have.property("deletedCount", 1);
+        }
       });
     });
   });

@@ -8,11 +8,11 @@ const alpha = (i: number): string => String.fromCharCode("a".charCodeAt(0) + i);
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
-  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
+  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400,
 );
 const describe2x = ARANGO_VERSION < 30000 ? describe : describe.skip;
 
-describe("Simple queries", function() {
+describe("Simple queries", function () {
   let name = `testdb_${Date.now()}`;
   let db: Database;
   let collection: DocumentCollection;
@@ -33,13 +33,13 @@ describe("Simple queries", function() {
     collection = db.collection(`c_${Date.now()}`);
     await collection.create();
     await Promise.all(
-      range(10).map(i =>
+      range(10).map((i) =>
         collection.save({
           _key: alpha(i),
           value: i + 1,
-          group: Math.floor(i / 2) + 1
+          group: Math.floor(i / 2) + 1,
         })
-      )
+      ),
     );
   });
   afterEach(async () => {
@@ -59,13 +59,13 @@ describe("Simple queries", function() {
       });
       expect(arr.map((d: any) => d.value).sort()).to.eql(
         range(10)
-          .map(i => i + 1)
-          .sort()
+          .map((i) => i + 1)
+          .sort(),
       );
       expect(arr.map((d: any) => d._key).sort()).to.eql(
         range(10)
           .map(alpha)
-          .sort()
+          .sort(),
       );
     });
   });
