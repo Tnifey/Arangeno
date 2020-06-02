@@ -1,29 +1,25 @@
 import { Errback } from "./types.ts";
 
-// import _xhr from "https://dev.jspm.io/npm:sw-xhr";
-
-// const xhr = _xhr as (options: any, cb: Errback<Response>) => Request;
-
 const xhr = (
   { url, ...options }: any,
-  cb: Errback<Response & { data?: any }>,
+  cb: Errback<Response & { data?: any }>
 ) => {
   const req = new Request(url, options);
 
   fetch(req)
-    .catch((err) => err)
-    .then(async (res) => {
+    .catch(err => err)
+    .then(async res => {
       if (res instanceof Error) {
         throw res;
       } else {
-        // @ts-ignore
-        const data = await res.text();
+        const clone = res.clone() as Response;
+        const data = await clone.json();
 
         if (data?.error) {
           data.request = req;
           cb(data);
         } else {
-          res.body.text = () => data;
+          res.data = data;
           cb(null, res);
         }
       }

@@ -78,15 +78,15 @@ export type Config =
   | string
   | string[]
   | Partial<{
-    url: string | string[];
-    isAbsolute: boolean;
-    arangoVersion: number;
-    loadBalancingStrategy: LoadBalancingStrategy;
-    maxRetries: false | number;
-    agent: any;
-    agentOptions: { [key: string]: any };
-    headers: { [key: string]: string };
-  }>;
+      url: string | string[];
+      isAbsolute: boolean;
+      arangoVersion: number;
+      loadBalancingStrategy: LoadBalancingStrategy;
+      maxRetries: false | number;
+      agent: any;
+      agentOptions: { [key: string]: any };
+      headers: { [key: string]: string };
+    }>;
 
 export class Connection {
   private _activeTasks: number = 0;
@@ -118,12 +118,14 @@ export class Connection {
       this._databaseName = false;
     }
     this._agent = config.agent;
-    this._agentOptions = isBrowser ? { ...config.agentOptions! } : {
-      maxSockets: 3,
-      keepAlive: true,
-      keepAliveMsecs: 1000,
-      ...config.agentOptions,
-    };
+    this._agentOptions = isBrowser
+      ? { ...config.agentOptions! }
+      : {
+          maxSockets: 3,
+          keepAlive: true,
+          keepAliveMsecs: 1000,
+          ...config.agentOptions,
+        };
     this._maxTasks = this._agentOptions.maxSockets || 3;
     if (this._agentOptions.keepAlive) this._maxTasks *= 2;
 
@@ -139,7 +141,9 @@ export class Connection {
     }
 
     const urls = config.url
-      ? Array.isArray(config.url) ? config.url : [config.url]
+      ? Array.isArray(config.url)
+        ? config.url
+        : [config.url]
       : ["http://localhost:8529"];
     this.addToHostList(urls);
 
@@ -237,17 +241,17 @@ export class Connection {
   }
 
   addToHostList(urls: string | string[]): number[] {
-    const cleanUrls = (Array.isArray(urls) ? urls : [urls]).map((url) =>
+    const cleanUrls = (Array.isArray(urls) ? urls : [urls]).map(url =>
       sanitizeUrl(url)
     );
-    const newUrls = cleanUrls.filter((url) => this._urls.indexOf(url) === -1);
+    const newUrls = cleanUrls.filter(url => this._urls.indexOf(url) === -1);
     this._urls.push(...newUrls);
     this._hosts.push(
       ...newUrls.map((url: string) =>
         createRequest(url, this._agentOptions, this._agent)
-      ),
+      )
     );
-    return cleanUrls.map((url) => this._urls.indexOf(url));
+    return cleanUrls.map(url => this._urls.indexOf(url));
   }
 
   get arangoMajor() {
@@ -299,7 +303,7 @@ export class Connection {
       headers,
       ...urlInfo
     }: RequestOptions,
-    getter?: ReqGetter<T>,
+    getter?: ReqGetter<T>
   ): Promise<T> {
     return new Promise((resolve, reject) => {
       let contentType = "text/plain";
@@ -342,12 +346,11 @@ export class Connection {
           let parsedBody: any = undefined;
           if (res.body.length && contentType && contentType.match(MIME_JSON)) {
             try {
-              parsedBody = res.body;
-              parsedBody = JSON.parse(parsedBody);
+              parsedBody = await res.json();
             } catch (e) {
               if (!expectBinary) {
                 if (typeof parsedBody !== "string") {
-                  parsedBody = res.body.toString("utf-8");
+                  parsedBody = await res.text();
                 }
                 e.response = res;
                 reject(e);
@@ -367,17 +370,13 @@ export class Connection {
             parsedBody.hasOwnProperty("errorMessage") &&
             parsedBody.hasOwnProperty("errorNum")
           ) {
-            // @ts-ignore
-            res.body = parsedBody;
-            reject(new ArangoError(res));
+            reject(new ArangoError({ ...res, body: parsedBody }));
           } else if (res.status && res.status >= 400) {
-            // @ts-ignore
-            res.body = parsedBody;
-            reject(new HttpError(res));
+            reject(new HttpError({ ...res, body: parsedBody }));
           } else {
-            // @ts-ignore
-            if (!expectBinary) res.body = parsedBody;
-            resolve(getter ? getter(res) : (res as any));
+            resolve(
+              getter ? getter({ ...res, body: parsedBody }) : (res as any)
+            );
           }
         },
       });
