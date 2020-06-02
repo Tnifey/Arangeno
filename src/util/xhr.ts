@@ -2,13 +2,13 @@ import { Errback } from "./types.ts";
 
 const xhr = (
   { url, ...options }: any,
-  cb: Errback<Response & { data?: any }>
+  cb: Errback<Response & { data?: any }>,
 ) => {
   const req = new Request(url, options);
 
   fetch(req)
-    .catch(err => err)
-    .then(async res => {
+    .catch((err) => err)
+    .then(async (res) => {
       if (res instanceof Error) {
         throw res;
       } else {

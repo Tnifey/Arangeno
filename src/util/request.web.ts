@@ -52,7 +52,7 @@ export function createRequest(baseUrl: string, agentOptions: any) {
   ]);
   return function request(
     { method, url, headers, body, timeout, expectBinary }: RequestOptions,
-    cb: Errback<ArangojsResponse>
+    cb: Errback<ArangojsResponse>,
   ) {
     $url.pathname = url.pathname;
 
@@ -64,9 +64,7 @@ export function createRequest(baseUrl: string, agentOptions: any) {
     //     : url.pathname
     //   : $url.pathname;
     $url.search = url.search
-      ? $url.search
-        ? `${$url.search}&${url.search.slice(1)}`
-        : url.search
+      ? $url.search ? `${$url.search}&${url.search.slice(1)}` : url.search
       : $url.search;
 
     if (!headers["authorization"]) {
