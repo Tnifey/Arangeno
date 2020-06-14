@@ -2,9 +2,7 @@ import { ArangoError, HttpError } from "./error.ts";
 import { ArangojsResponse, createRequest, isBrowser } from "./util/request.ts";
 import { sanitizeUrl } from "./util/sanitizeUrl.ts";
 import { Errback } from "./util/types.ts";
-import X3LinkedList from "https://dev.jspm.io/x3-linkedlist";
-// @ts-ignore
-const { LinkedList } = X3LinkedList;
+import { LinkedList } from "https://github.com/Tnifey/x3-linkedlist/raw/master/src/index.ts";
 
 const MIME_JSON = /\/(json|javascript)(\W|$)/;
 const LEADER_ENDPOINT_HEADER = "x-arango-endpoint";
@@ -299,7 +297,7 @@ export class Connection {
       headers,
       ...urlInfo
     }: RequestOptions,
-    getter?: ReqGetter<T>,
+    getter?: RequestGetter<T>,
   ): Promise<T> {
     return new Promise((resolve, reject) => {
       let contentType = "text/plain";
@@ -337,12 +335,17 @@ export class Connection {
           body,
         },
         reject,
-        resolve: async (res: ArangojsResponse) => {
+        resolve: async (res: ArangojsResponse | ArangoError | HttpError) => {
+          if (res instanceof ArangoError || res instanceof HttpError) {
+            reject(res);
+            return;
+          }
+
           const contentType = res.headers.get("content-type");
           let parsedBody: any = undefined;
           if (res.body.length && contentType && contentType.match(MIME_JSON)) {
             try {
-              parsedBody = await res.json();
+              parsedBody = res.body;
             } catch (e) {
               if (!expectBinary) {
                 if (typeof parsedBody !== "string") {
@@ -367,11 +370,11 @@ export class Connection {
             parsedBody.hasOwnProperty("errorNum")
           ) {
             reject(new ArangoError({ ...res, body: parsedBody }));
-          } else if (res.status && res.status >= 400) {
-            reject(new HttpError({ ...res, body: parsedBody }));
           } else {
             resolve(
-              getter ? getter({ ...res, body: parsedBody }) : (res as any),
+              typeof getter === "function"
+                ? getter({ ...res, body: parsedBody })
+                : (res as any),
             );
           }
         },
@@ -381,4 +384,4 @@ export class Connection {
   }
 }
 
-type ReqGetter<T = any> = (res: ArangojsResponse) => T;
+type RequestGetter<T = any> = (res: ArangojsResponse) => T;
